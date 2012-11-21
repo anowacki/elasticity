@@ -121,11 +121,13 @@ fi
 
 # 'Snap' the desired slice point to the true grid value below x
 x=`printf "%0.0f" $x`  # Force to be integer
-if [ $x -lt ${minx3} -o $x -gt ${maxx3} ]; then 
+badx=`echo $x ${minx3} ${maxx3} | awk '$1<$2{print "1"} $1>$3{print "1"}'`
+if [ -n "$badx" ]; then 
 	echo "plot_model_Au_bin: slice must be within range ${minx3} ${maxx3}" > /dev/stderr
 	exit 4
 fi
-x=$[$x-(($x-(${minx3}))%${dx3})]    # Remove remainder when divided by dx
+#x=$[$x-(($x-(${minx3}))%${dx3})]    # Remove remainder when divided by dx
+x=`echo $x $minx3 $dx3 | awk '{print $1- ($1-$2)%$3}'`
 
 # Maximum dimension on plot / cm
 maxdim=12
