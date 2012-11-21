@@ -1,0 +1,18 @@
+#!/bin/bash
+# normalise a set of 36 eastic constants on a line by a given density
+
+if [ $# -ne 1 ]; then
+	echo "  Usage: echo ecs | CIJ_normalise [rho]"
+	echo "  Accepts 36 elastic constants via stdin and divides all by given density rho."
+	exit 1
+fi
+
+rho=$1
+
+awk -v rho=$rho 'NF==36{for (i=1; i<=36; i++){$i = $i/rho}; print} \
+				 NF!=36{print "Input must be 36 Cij elastic constants." > "/dev/stderr"; \
+					err=2; exit 2} \
+		END {if (err == 2) exit 2}' \
+				 < /dev/stdin
+
+exit $?

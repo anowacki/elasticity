@@ -1,0 +1,4 @@
+*.o
+*.mod
+.gmt*
+.ematrix6_control

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Convert an ijxyz EC_grid file to just a set of elastic constants, one per line.
+# 
+
+if [ $# -ne 0 ]; then
+	echo "Usage: input | ijxyz2ij"
+	echo "   Reads ijxyz lines (x y z c11 c12 ...) from stdin and removes the coordinates for use with other utilities."
+	exit 1
+fi
+
+awk '{$1=""; $2=""; $3=""; print}' /dev/stdin

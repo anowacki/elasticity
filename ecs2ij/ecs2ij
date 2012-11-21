@@ -1,0 +1,51 @@
+#!/bin/bash
+# Convert a list of .ecs files (with columns i j Cij, down to 7 7 rho) into a stream
+# of 36 Cijs (c11 c12 c13 c14 ... c16 c21 c22) [default]
+# or 21 Cijs (c11 ... c16 c22 ...)
+
+if [ $# -eq 0 ]; then
+	echo "Usage: ecs2ij (-necs [necs]) [.ecs file(s)]"
+	echo "   Output is to stdout (default 36 ecs)."
+	exit 1
+fi
+
+necs=36
+if [ $1 = -necs ]; then
+	necs=$2
+	if [ $necs -ne 21 -a $necs -ne 36 ]; then
+		echo "necs must be 21 or 36"
+		exit 2
+	fi
+fi
+
+filelist=$(echo $@ | awk '$1!="-necs"{print}$1=="-necs"{$1=""; $2=""; print}')
+
+if [ $necs -eq 21 ]; then
+	for file in $filelist; do
+		awk '($1>=1 && $1<=6 && $1%1==0) && ($2>=1 && $2<=6 && $2%1==0) \
+				{i=$1; j=$2; c[i,j]=$3} \
+			$1==7 && $2==7 \
+				{den=$3}\
+			END \
+				{for(i=1; i<=6; i++){ \
+					for(j=i; j<=6; j++) \
+						{printf("%12.5e "),c[i,j]/den \
+					} \
+				}; printf("\n")}' $file
+	done
+else
+	for file in $filelist; do
+		awk '($1>=1 && $1<=6 && $1%1==0) && ($2>=1 && $2<=6 && $2%1==0) \
+				{i=$1; j=$2; c[i,j]=$3; c[j,i]=c[i,j]} \
+			$1==7 && $2==7 \
+				{den=$3}\
+			END \
+				{for(i=1; i<=6; i++){ \
+					for(j=1; j<=6; j++) \
+						{printf("%12.5e "),c[i,j]/den \
+					} \
+				}; printf("\n")}' $file
+	done
+fi
+
+exit 0

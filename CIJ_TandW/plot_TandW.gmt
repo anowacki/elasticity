@@ -1,0 +1,28 @@
+#/bin/bash
+# Produce plot à la Kendall for anisotropy of inclusions using the theory of
+# Tandon & Weng, 1984.
+
+vp=8033.7
+vs=4443.6
+rho=3367.1
+
+vpi=4000
+vsi_min=0
+vsi_max=`echo $vp | awk '{print $1*10}'`
+dvsi=100
+rho=3367.1
+
+del=0.01
+
+inc=0
+azi=0
+
+
+for c in 0.001; do # 0.005 0.01 0.05 0.1 0.5; do
+	echo $c |\
+		awk -v vp=$vp -v vs=$vs -v rho=$rho -v del=$del -v dvsi=$dvsi \
+		    -v vpi=$vpi -v vsi0=${vsi_min} -v vsi1=${vsi_max} -v rhoi=$rhoi \
+		'{for(vsi=vsi0; vsi<=vsi1; vsi=vsi+dvsi) print vp,vs,rho,del,$1,vpi,vsi,rhoi}' #|\
+#		CIJ_TandW #|\
+#		CIJ_phasevels $inc $azi $rho
+done
