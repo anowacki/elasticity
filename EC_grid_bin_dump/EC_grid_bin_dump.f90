@@ -7,7 +7,9 @@ program EC_grid_bin_dump
    
    implicit none
    
-   type(ECgrid) :: grid
+   type(ECgrid) :: grid ! Assumed-integer coordinates
+   type(ECgridi) :: gridi ! Explicit-integer coordinates
+   type(ECgridr) :: gridr ! Explicit-real coordinates
    character(len=250) :: infile
    integer :: necs = 21  ! Default to output only 21 ecs
    
@@ -31,8 +33,7 @@ program EC_grid_bin_dump
 !  Get input file name
    call getarg(1,infile)
    
-   call EC_grid_load_bin(trim(infile),grid)
-   
-   call EC_grid_dump(grid,necs)
+!  Check what type of file it is
+   call EC_grid_dump_file_bin(infile,necs)
    
 end program
