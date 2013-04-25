@@ -14,12 +14,12 @@ use anisotropy_ajn, only: CIJ_VRH_n, CIJ_load
 implicit none
 
 integer,parameter :: nmax = 10000  ! Maximum number of constants to average
-integer :: n,i,j
+integer :: n,i,ii,jj
 real(8) :: C(nmax,6,6),Ctemp(6,6)
 real(8) :: VF(nmax),VFtemp
 real(8) :: r(nmax),rtemp
 character(len=250) :: arg
-character(len=80)  :: file
+character(len=250)  :: file
 integer :: ioerr
 
 !  Check for correct invocation
@@ -27,8 +27,8 @@ if (modulo(iargc(),2) /= 0) then
    write(0,'(a)') &
    'Usage:', &
    '   CIJ_VRH < [input] > [output]', &
-   '   input is: VF(i)   c11(i)   c12(i) ... c16(i)   c21(i)   ... c26(i)   ... c66(i)', &
-   '             VF(i+1) c11(i+1) c12(i) ... c16(i+1) c21(i+1) ... c26(i+1) ... c66(i+1)', &
+   '   input is: VF(i)   c11(i)   c12(i) ... c16(i)   c21(i)   ... c26(i)   ... c66(i)   rho(i)', &
+   '             VF(i+1) c11(i+1) c12(i) ... c16(i+1) c21(i+1) ... c26(i+1) ... c66(i+1) rho(i+1)', &
    'OR', &
    '   CIJ_VRH [.ecs file 1] [VF 1]  [.ecs file 2] [VF 2] ... [.ecs file n] [VF n]',&
    '   Output: 36 ecs and density'
@@ -42,7 +42,7 @@ if (iargc() == 0) then
    ioerr = 0
    i = 1
    do while (ioerr == 0)
-      read(*,*,iostat=ioerr) VFtemp, rtemp, ((Ctemp(i,j),j=1,6),i=1,6)
+      read(*,*,iostat=ioerr) VFtemp, ((Ctemp(ii,jj),jj=1,6),ii=1,6), rtemp
       if (ioerr > 0) then
          write(0,'(a)') 'CIJ_VRH: Error: problem reading constants from stdin.'
          stop
@@ -57,7 +57,7 @@ if (iargc() == 0) then
    
    call CIJ_VRH_n(n,VF(1:n),C(1:n,:,:),r(1:n),Ctemp,rtemp)
    
-   write(*,*) ((Ctemp(i,j),j=1,6),i=1,6),rtemp
+   write(*,*) ((Ctemp(ii,jj),jj=1,6),ii=1,6),rtemp
    
 !  Read the .ecs files from the command line and mix them in the proportions given
 !  by every second command line argument
@@ -75,7 +75,7 @@ else
    
    call CIJ_VRH_n(n,VF(1:n),C(1:n,:,:),r(1:n),Ctemp,rtemp)
    
-   write(*,*) ((Ctemp(i,j),j=1,6),i=1,6),rtemp
+   write(*,*) ((Ctemp(ii,jj),jj=1,6),ii=1,6),rtemp
 endif
 
 end program
