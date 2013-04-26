@@ -2,12 +2,13 @@
 *.mod
 .gmt*
 .ematrix6_control
+CIJ_global_VTI/CIJ_global_VTI
 CIJ_iso_av/CIJ_iso_av
-CIJ_VRH/CIJ_VRH
-CIJ_plot/CIJ_plot_cij2phasevels
+CIJ_plot/src/CIJ_plot_cij2phasevels
 CIJ_Reuss/CIJ_Reuss
 CIJ_scale_to_iso/CIJ_scale_to_iso
 CIJ_thom/CIJ_thom_list
 CIJ_thom/CIJ_thom
-CIJ_global_VTI/CIJ_global_VTI
+CIJ_VRH/CIJ_VRH
+CIJ_Voigt/CIJ_Voigt
 EC_grid_normalise_bin/bin/EC_grid_normalise_bin
