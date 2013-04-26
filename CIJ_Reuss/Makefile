@@ -1,5 +1,5 @@
 FC = gfortran
-FCOPTS = -g -ggdb -fbounds-check -frange-check
+FCOPTS = -O2 -g -ggdb -fbounds-check -frange-check
 L = ~/Applications/modules/lib
 LIBS = -lanisotropy_ajn -lget_args
 M = ~/Applications/modules/mods
@@ -15,3 +15,8 @@ CIJ_Reuss: CIJ_Reuss.o
 
 %.o: %.f90
 	$(FC) ${FCOPTS} -c -J $(M) $*.f90
+
+.PHONY: clean
+
+clean:
+	/bin/rm -f *.o
