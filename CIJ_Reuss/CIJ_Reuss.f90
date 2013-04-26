@@ -58,6 +58,13 @@ program CIJ_Reuss
          exit in_loop
       endif
 
+      ! Check we haven't averaged too many constants
+      if (nlines >= nmax) then
+         write(0,'(a,i0.0,a)') 'CIJ_Reuss: number of input constants exceeds precompiled maximum (',nmax,')'
+         write(0,'(a)') 'Recompile with larger limits if this is a problem'
+         stop
+      endif
+
    enddo in_loop
       
    ! Check we have at least two lines
@@ -76,8 +83,6 @@ program CIJ_Reuss
    else
       write(*,*) ((Cave(i,j),j=1,6),i=1,6),rhave
    endif
-   
-!   deallocate(VFi,Ci,rhi)
    
 end program CIJ_Reuss
 !-------------------------------------------------------------------------------
