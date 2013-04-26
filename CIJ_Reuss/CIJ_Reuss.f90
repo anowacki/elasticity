@@ -58,15 +58,8 @@ program CIJ_Reuss
          exit in_loop
       endif
 
-      write(0,'(/a,i0.0,a)') 'Input constants (',nlines,')'
-      call CIJ_disp(C(nlines,:,:), unit=0)
-      write(0,'(a,e10.4)') 'Density:  ',rh(nlines)
-
    enddo in_loop
       
-   !DEBUG
-   write(0,'(a,i0.0,a)') 'Got ',nlines,' lines of input'
-   
    ! Check we have at least two lines
    if (nlines < 2) then
       write(0,'(a)') 'CIJ_Reuss: more than one set of ECs must be provided on stdin.'
