@@ -19,4 +19,4 @@ CIJ_iso_av: CIJ_iso_av.o
 .PHONY: clean
 
 clean:
-	/bin/rm -f *.o
+	/bin/rm -f CIJ_iso_av *.o *.mod

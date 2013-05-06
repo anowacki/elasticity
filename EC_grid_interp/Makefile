@@ -21,4 +21,4 @@ EC_grid_interp_bin: EC_grid_interp_bin.o
 .PHONY: clean
 
 clean:
-	/bin/rm -f *.o
+	/bin/rm -f EC_grid_interp_bin *.o

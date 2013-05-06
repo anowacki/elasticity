@@ -21,4 +21,4 @@ EC_grid_edit_bin: EC_grid_edit_bin.o
 .PHONY: clean
 
 clean:
-	/bin/rm -f *.o
+	/bin/rm -f *.o EC_grid_edit_bin

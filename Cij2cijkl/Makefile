@@ -10,3 +10,8 @@ install: Cij2cijkl
 
 Cij2cijkl: anisotropy_ajn.f90 Cij2cijkl.f90
 	$(FC) ${FCOPTS} -o Cij2cijkl anisotropy_ajn.f90 Cij2cijkl.f90
+
+.PHONY: clean
+
+clean:
+	/bin/rm -f Cij2cijkl *.mod *.o

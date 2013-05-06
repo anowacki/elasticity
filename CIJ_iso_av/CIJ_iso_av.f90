@@ -35,7 +35,8 @@ outer:do while (i <= iargc())
             write(0,'(a)') 'Usage: CIJ_iso < (-vel) [list of 36 ecs + density]', &
                            '   or: CIJ_iso [.ecs file]',&
                            '       -v(els) :  Only output average velocities.',&
-                           '       -h(elp) :  Print help.'
+                           '       -h(elp) :  Print help.',&
+                           '  Outputs full elasticity tensor (36 elements).'
             stop
          endif
       endif
@@ -60,7 +61,7 @@ if (iargc()-nopt == 0) then
       if (vel_out) then   ! Only output velocities
          write(*,*) sqrt(Ciso(3,3)), sqrt(Ciso(4,4))
       else                ! Write full tensor
-         write(*,*) ((Ciso(i,j)/r,j=1,6),i=1,6)
+         write(*,*) ((Ciso(i,j)*r,j=1,6),i=1,6)
       endif
    enddo
 
@@ -83,7 +84,7 @@ else
       if (vel_out) then   ! Only output velocities
          write(*,*) sqrt(Ciso(3,3)), sqrt(Ciso(4,4))
       else                ! Write full tensor
-         write(*,*) ((Ciso(i,j)/r,j=1,6),i=1,6)
+         write(*,*) ((Ciso(i,j)*r,j=1,6),i=1,6)
       endif
    enddo
 endif
@@ -130,6 +131,7 @@ CONTAINS
    
    !  Construct elasticity tensor
    if (present(Ciso)) then
+      Ciso = 0.0_8
       Ciso(1,1) = Vp_temp**2  ; Ciso(2,2) = Ciso(1,1)  ;  Ciso(3,3) = Ciso(1,1)
       Ciso(4,4) = Vs_temp**2  ; Ciso(5,5) = Ciso(4,4)  ;  Ciso(6,6) = Ciso(4,4)
       Ciso(1,2) = Ciso(1,1) - 2._8*Ciso(4,4)

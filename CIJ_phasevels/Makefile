@@ -12,3 +12,7 @@ install: CIJ_phasevels
 CIJ_phasevels: CIJ_phasevels.f90 ${MODS}
 	$(FC) ${FCOPTS} -o CIJ_phasevels ${MODS} CIJ_phasevels.f90
 
+.PHONY: clean
+
+clean:
+	/bin/rm -f CIJ_phasevels *.mod *.o
