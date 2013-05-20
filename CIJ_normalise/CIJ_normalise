@@ -13,7 +13,7 @@ rho=$1
 [[ "${rho:0:2}" == "1/" ]] && rho=`echo "1/${rho:2}" | bc -l`
 
 awk -v rho=$rho 'NF==36{for (i=1; i<=36; i++){$i = $i/rho}; print} \
-				 NF!=36{print "Input must be 36 Cij elastic constants." > "/dev/stderr"; \
+				 NF!=36{print "CIJ_normalise: Input must be 36 Cij elastic constants." > "/dev/stderr"; \
 					err=2; exit 2} \
 		END {if (err == 2) exit 2}' \
 				 < /dev/stdin
