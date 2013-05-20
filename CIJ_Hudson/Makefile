@@ -10,3 +10,8 @@ install: CIJ_Hudson
 
 CIJ_Hudson: $(ANISOMOD) CIJ_Hudson.f90
 	$(FC) ${FCOPTS} -o CIJ_Hudson -J$(CURDIR) $(ANISOMOD) CIJ_Hudson.f90
+
+.PHONY: clean
+
+clean:
+	/bin/rm -f CIJ_Hudson *.o *.mod

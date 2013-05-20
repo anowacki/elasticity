@@ -20,4 +20,4 @@ EC_grid_bin_dump.o: EC_grid.o EC_grid_bin_dump.f90
 .PHONY: clean
 
 clean:
-	/bin/rm -f *.o *.mod
+	/bin/rm -f *.o *.mod EC_grid_bin_dump

@@ -4,9 +4,9 @@ BIN = ~nowacki/Applications/bin
 
 default: Au EC_grid2Au.bash
 
-install: Au EC_grid2Ay.bash
-	/bin/cp Au $(BIN)/Au
-	/bin/cp EC_grid2Au.bash $(BIN)/EC_grid2Au
+install: Au EC_grid2Au.bash
+	/bin/cp -f Au $(BIN)/
+	/bin/cp -f EC_grid2Au.bash $(BIN)/EC_grid2Au
 
 Au: Au.o anisotropy_ajn.o
 	$(FC) $(FCOPTS) -o Au Au.o anisotropy_ajn.o
@@ -19,4 +19,4 @@ Au.o: anisotropy_ajn.o
 .PHONY: clean
 
 clean:
-	/bin/rm *.mod *.o
+	/bin/rm Au *.mod *.o

@@ -19,4 +19,4 @@ CIJ_scale_to_iso: CIJ_scale_to_iso.o
 .PHONY: clean
 
 clean:
-	/bin/rm -f *.o
+	/bin/rm -f CIJ_scale_to_iso *.mod *.o

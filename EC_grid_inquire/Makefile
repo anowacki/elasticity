@@ -13,3 +13,8 @@ EC_grid_inquire: $(MODS) EC_grid_inquire.f90
 
 EC_grid_inquire_bin: $(MODS) EC_grid_inquire_bin.f90 
 	$(FC) ${FFLAGS} -o EC_grid_inquire_bin $(MODS) EC_grid_inquire_bin.f90
+
+.PHONY: clean
+
+clean:
+	/bin/rm -f EC_grid_inquire EC_grid_inquire_bin *.mod *.o

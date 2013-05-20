@@ -16,3 +16,8 @@ CIJ_rot3: anisotropy_ajn.o CIJ_rot3.o
 
 %.o: %.f90
 	$(FC) ${FCOPTS} -c $*.f90
+
+.PHONY: clean
+
+clean:
+	/bin/rm -f CIJ_rot3 *.o *.mod

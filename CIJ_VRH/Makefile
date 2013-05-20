@@ -19,4 +19,4 @@ CIJ_VRH: $(LIBDIR)/lib$(LIB).so CIJ_VRH.o
 .PHONY: clean
 
 clean:
-	/bin/rm -f *.o *.mod
+	/bin/rm -f CIJ_VRH *.o *.mod

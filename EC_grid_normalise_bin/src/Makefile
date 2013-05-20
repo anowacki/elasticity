@@ -13,3 +13,8 @@ install: EC_grid_normalise_bin
 
 $B/EC_grid_normalise_bin: $(MODS) EC_grid_normalise_bin.f90 
 	$(FC) ${FFLAGS} -o $B/EC_grid_normalise_bin $(MODS) EC_grid_normalise_bin.f90
+
+.PHONY: clean
+
+clean:
+	/bin/rm -f EC_grid *.o *.mod

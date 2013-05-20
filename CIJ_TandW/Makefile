@@ -20,4 +20,4 @@ CIJ_TandW.o: anisotropy_ajn.o CIJ_TandW.f90
 .PHONY: clean
 
 clean:
-	/bin/rm *.o
+	/bin/rm CIJ_TandW *.mod *.o
