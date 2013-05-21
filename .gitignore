@@ -27,6 +27,7 @@ EC_grid_inquire/EC_grid_inquire_bin
 EC_grid_interp/EC_grid_interp_bin
 EC_grid_new/EC_grid_new_bin
 EC_grid_normalise_bin/bin/EC_grid_normalise_bin
+EC_grid_rotate/EC_grid_rotate_bin
 EC_rot3/EC_rot3
 EC_rot3/EC_rot3_xyz
 cijkl2Cij/cijkl2Cij
