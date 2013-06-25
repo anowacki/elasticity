@@ -7,12 +7,14 @@ function usage {
 # Not implemented yet:
 # 	echo "    -x1 [minx1 maxx1]     :  Define dimensions for horizontal axis" > /dev/stderr
 # 	echo "    -x2 [minx2 maxx2]     :  Define dimensions for vertical axis" > /dev/stderr
+	echo "    -r [density]          :  Normalise constants by density.  Use '1' if already normalised." > /dev/stderr
 	echo "    -x|-y|-z [slice]      :  Plot slice at x|y|z = [slice]." > /dev/stderr
 	echo "    -Au                   :  Plot Universal Anisotropy Index (default)" > /dev/stderr
 	echo "    -c [colour palette]   :  Use alternative GMT colour palette" > /dev/stderr
 	echo "    -cflip                :  Flip the colour palette" > /dev/stderr
 	echo "    -p                    :  Plot isotropic average of P wave velocity" > /dev/stderr
 	echo "    -s                    :  Plot isotropic average of S wave velocity" > /dev/stderr
+	echo "    -dVp, -dVs            :  Plot isotropic velocity as deviation from average" > /dev/stderr
 	echo "    -o [outfile]          :  Send output to [outfile]" > /dev/stderr
 	echo "    -q                    :  Batch mode: don't display image with gv." > /dev/stderr
 	echo "    -scale [min max]      :  Provide custom limits for scale" > /dev/stderr
@@ -22,6 +24,7 @@ function usage {
 file=$1
 shift 1
 necs=21  # This is only relevant for binary files in terms of input to Au
+den=1000
 
 # Defaults: plot Au to temporary location
 Au=1
@@ -32,6 +35,9 @@ if [ $# -eq 0 ]; then usage; fi
 # If we want, take a slice through the model at a specified level
 while [ -n "$1" ]; do
 	case "$1" in
+		-r)
+			den=$2
+			shift 2 ;;
 		-x)
 			slice=1
 			x=$2
@@ -76,6 +82,14 @@ while [ -n "$1" ]; do
 			unset Au
 			shift
 			;;
+		-dVp|-dvp|-dP|-dp)
+			p=1; dv=1
+			unset Au
+			shift ;;
+		-dVs|-dvs|-dS|-ds)
+			s=1; dv=1
+			unset Au
+			shift ;;
 		-o)
 			FIG="$2"
 			if [ ! -w `dirname "$FIG"` ]; then
@@ -146,31 +160,51 @@ if [ -n "$Au" ]; then
 		$1=""; $2=""; $3=""; print $0}' | Au $necs | grep -v "redundant" > /tmp/plot_model_Au.Au
 elif [ -n "$p" ]; then  # Vp with dummy density
 	EC_grid_bin_dump $file 36 |\
-		awk -v x=$x -v x1=${x1} -v x2=${x2} '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
-			$1=""; $2=""; $3=""; print $0,1000}' | CIJ_iso_av |\
-		awk '{print sqrt($1)/1000}'  > /tmp/plot_model_Au.Au
+		awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
+			$1=""; $2=""; $3=""; print $0,den}' | CIJ_iso_av |\
+			awk '{print sqrt($1)/1000}'  > /tmp/plot_model_Au.Au
 elif [ -n "$s" ]; then # Vs with dummy density
 	EC_grid_bin_dump $file 36 |\
-		awk -v x=$x -v x1=${x1} -v x2=${x2} '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
-			$1=""; $2=""; $3=""; print $0,1000}' | CIJ_iso_av |\
+		awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
+			$1=""; $2=""; $3=""; print $0,den}' | CIJ_iso_av |\
 		awk '{print sqrt($22)/1000}' > /tmp/plot_model_Au.Au
 fi
 
-EC_grid_bin_dump $file 36 |\
-	awk -v x=$x -v x1=${x1} -v x2=${x2} '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
-		$1=""; $2=""; $3=""; print $0,1000}' > /tmp/temp.Au
+# Convert to percentage deviation if plotting relative velocities
+if [ -n "$dv" ]; then
+	meanAu=`awk '$1!="NaN" && $1 >= 0 && $2!="redundant" {n+=1; sum+=$1} END{print sum/n}' /tmp/plot_model_Au.Au`
+	awk -v mean=$meanAu '$1!="NaN"{print 100*($1-mean)/mean}$1=="NaN"{print}' /tmp/plot_model_Au.Au > /tmp/plot_model_Au.Au.temp
+	mv /tmp/plot_model_Au.Au{.temp,}
+fi
+
+# EC_grid_bin_dump $file 36 |\
+# 	awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
+# 		$1=""; $2=""; $3=""; print $0,den}' > /tmp/temp.Au
 
 # Calculate minimum/maxmimum Au/Vp/Vs; NaNs mean Au=0.  Stop if no anisotropy present.
 if [ -z "$scale" ]; then
-	minmax=`awk 'BEGIN{min=1e36;max=0} \
-			$1<min && $1!="NaN" {min=$1; if ($1<0) min=0} \
-			$1>max && $1!="NaN" {max=$1}\
-			$1=="NaN" {min=0} \
-			$1<0 || $1=="redundant" {l=1; min=0} \
-			END{if (l==1) print "Warning: Some constants not as expected: some some nodes contain liquid?" > "/dev/stderr" ;\
-				print min,max}' /tmp/plot_model_Au.Au`
-	minAu=`echo $minmax | awk '{printf("%5.3e",$1)}'`
-	maxAu=`echo $minmax | awk '{printf("%5.3e",$2)}'`
+	if [ -z "$dv" ]; then
+		# Plotting absolute values
+		minmax=`awk 'BEGIN{min=1e36;max=0} \
+				$1<min && $1!="NaN" {min=$1; if ($1<0) min=0} \
+				$1>max && $1!="NaN" {max=$1}\
+				$1=="NaN" {min=0} \
+				$1<0 || $1=="redundant" {l=1; min=0} \
+				END{if (l==1) print "Warning: Some constants not as expected: some some nodes contain liquid?" > "/dev/stderr" ;\
+					print min,max}' /tmp/plot_model_Au.Au`
+		minAu=`echo $minmax | awk '{printf("%5.3e",$1)}'`
+		maxAu=`echo $minmax | awk '{printf("%5.3e",$2)}'`
+	else
+		# Plotting percentage variation from mean
+		minmax=`awk 'function abs(x){if (x<0) return -x; else return x}
+				BEGIN {max=-1e36}
+				abs($1)>max && $1!="NaN" {max=abs($1)}
+				$1=="redundant" {l=1}
+				END {if (l==1) print "Warning: Some constants not as expected: some nodes contain liquid?" > "/dev/stderr"
+					print max}' /tmp/plot_model_Au.Au`
+		maxAu=`echo $minmax | awk '{printf("%5.1e",$1)}'`
+		minAu=-$maxAu
+	fi
 	dAu=`echo $minmax | awk '{printf("%5.3e",($2-$1)/3)}'`
 fi
 
@@ -211,8 +245,10 @@ grdimage /tmp/plot_model_Au.grd -R${minx1}/${maxx1}/${minx2}/${maxx2} \
 
 # Add the scale
 [ -n "$Au" ] && label='@%2%A@+U@+'
-[ -n "$p" ]  && label='@%2%V@%%@-P@- / km s@+-1'
-[ -n "$s" ]  && label='@%2%V@%%@-S@- / km s@+-1'
+[ -n "$p" -a -z "$dv" ]  && label='@%2%V@%%@-P@- / km s@+-1'
+[ -n "$s" -a -z "$dv" ]  && label='@%2%V@%%@-S@- / km s@+-1'
+[ -n "$p" -a -n "$dv" ]  && label="@~d@~@%2%V@%%@-P@- / %"
+[ -n "$s" -a -n "$dv" ]  && label="@~d@~@%2%V@%%@-S@- / %"
 psscale -D`echo $width/2 | bc -l`c/-1c/8c/0.5ch -A -C/tmp/plot_model_Au.cpt -O -S -B/:"$label": \
 	>> $FIG
 
