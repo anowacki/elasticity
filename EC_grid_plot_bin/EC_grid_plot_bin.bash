@@ -15,6 +15,7 @@ function usage {
 	echo "    -p                    :  Plot isotropic average of P wave velocity" > /dev/stderr
 	echo "    -s                    :  Plot isotropic average of S wave velocity" > /dev/stderr
 	echo "    -dVp, -dVs            :  Plot isotropic velocity as deviation from average" > /dev/stderr
+	echo "    -title [title]        :  Add custom title to plot [slice number]" > /dev/stderr
 	echo "    -o [outfile]          :  Send output to [outfile]" > /dev/stderr
 	echo "    -q                    :  Batch mode: don't display image with gv." > /dev/stderr
 	echo "    -scale [min max]      :  Provide custom limits for scale" > /dev/stderr
@@ -90,6 +91,9 @@ while [ -n "$1" ]; do
 			s=1; dv=1
 			unset Au
 			shift ;;
+		-title)
+			title="$2"
+			shift 2 ;;
 		-o)
 			FIG="$2"
 			if [ ! -w `dirname "$FIG"` ]; then
@@ -233,6 +237,9 @@ if [ -n "$Au" ]; then C="hot"; [ -z "$cpt" ] && flip=1; fi
 dAu=`echo $minAu $maxAu | awk '{printf("%0.3e",($2-$1)/3)}'`
 makecpt -C$C $I -T$minAu/$maxAu/$dAu -D -Z > /tmp/plot_model_Au.cpt
 
+# Set title if not done on command line
+[ -z "$title" ] && title="@%2%x@%%@-$slice@- = $x"
+
 # Create the plot
 gmtset PAPER_MEDIA a4+
 paste /tmp/plot_model_Au.xy /tmp/plot_model_Au.Au |\
@@ -241,7 +248,7 @@ paste /tmp/plot_model_Au.xy /tmp/plot_model_Au.Au |\
 gmtset HEADER_OFFSET 14p
 grdimage /tmp/plot_model_Au.grd -R${minx1}/${maxx1}/${minx2}/${maxx2} \
 	-JX${width}c/${height}c -C/tmp/plot_model_Au.cpt -P \
-	-Ba1000:"@%2%x@%%@-${x1}":/a100:"@%2%x@%%@-${x2}"::."@%2%x@%%@-$slice@- = $x":NseW -K > $FIG
+	-Ba1000:"@%2%x@%%@-${x1}":/a100:"@%2%x@%%@-${x2}"::."$title":NseW -K > $FIG
 
 # Add the scale
 [ -n "$Au" ] && label='@%2%A@+U@+'
