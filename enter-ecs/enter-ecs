@@ -1,0 +1,142 @@
+#!/bin/bash
+
+# Easier way to enter elastic constants when it's not just a case of
+# copying and pasting.
+
+usage () {
+	{
+	echo "Usage: enter-ecs [outfile]"
+	echo "  Input elastic constants easily, and if desired calculate density"
+	echo "  from the unit cell volume and the elements and number therof in it."
+	echo "For example, 147.1 Mg 4 Si 4 O 12"
+	} > /dev/stderr
+	exit 1	
+}
+
+
+TEMP=`mktemp /tmp/enter-ecs.XXXXXXXXXX`
+
+[ $# -ne 1 ] && usage
+
+# Get output file and ask whether to overwrite
+file="$1"
+if ! [ -e "$file" ]; then
+	echo "Writing constants to file ${1}..."
+else
+	echo -e -n "File $file exists already.  Overwrite [Y]/N? "
+	read overwrite
+	if [[ "$overwrite" == "N" || "$overwrite" == "n" ]]; then
+		exit
+	else
+		echo "Writing constants over file $file..."
+	fi
+fi
+
+# Construct list of constants we want for each symmetry.  Defaults to the
+# triclinic case.
+echo -n "Choose symmetry:
+   [i]sotropic (2)
+   [c]ubic (3)
+   [h]exagonal (5)
+   [trig6]onal (6) 32, 3m, -3m
+   [trig7]onal (7)
+   [tet6]ragonal (6) 422, 4mm, -42m, 4/mmm
+   [tet7]ragonal (7) 4, -4, 4/m
+   [o]rthorhombic (9)
+   [m]onoclinic (13)
+   [tri]clinic (21) [default]  "
+read symm
+[ -z "$symm" ] && symm=tri
+
+case $symm in
+	# Isotropic
+	[Ii]*)     ijlist="11 12" ;;
+	# Cubic
+	[Cc]*)     ijlist="11 44 12" ;;
+	# Hexagonal
+	[Hh]*)     ijlist="11 33 12 13 44" ;;
+	# Trigonal (6) 32, 3m, -3m
+	trig6*)    ijlist="11 33 12 13 14 44" ;;
+	# Trigonal (7) 3, -3
+	trig7*)    ijlist="11 33 12 13 14 25 44" ;;
+	# Tetragonal (6) 422, 4mm, -42m, 4/mmm
+	tet6*)     ijlist="11 33 12 13 44 66" ;;
+	# Tetragonal (7) 4, -4, 4/m
+	tet7*)     ijlist="11 33 12 13 16 44 66" ;;
+	# Orthorhombic
+	[Oo]*)     ijlist="11 22 33 12 13 44 55 66" ;;
+	# Monoclinic
+	[Mm]*)     ijlist="11 22 33 12 13 15 23 25 35 44 46 55 66" ;;
+	# Triclinic
+	tri*)      ijlist="11 12 13 14 15 16 22 23 24 25 26 33 34 35 36 44 45 46 55 56 66" ;;
+	# Default
+	*)         echo "Symmetry \"$symm\" not recognised: all constants must be entered"
+	           ijlist="11 12 13 14 15 16 22 23 24 25 26 33 34 35 36 44 45 46 55 56 66" ;;
+esac
+
+# Read in the constants from stdin
+echo "Enter individual ecs in GPa:"
+for ij in $ijlist; do
+		echo -e -n "  Enter C${ij}: "
+		read C[ij]
+		C[ij]=${C[ij]:-0}  # Default to 0 for no input
+done
+
+# Fill in other constants which are related to the independent ones
+case $symm in
+	# Isotropic
+	[Ii]*)     C[22]=${C[11]}; C[33]=${C[11]}; C[13]=${C[12]}; C[23]=${C[12]}
+	           C[44]=`echo "(${C[11]}-${C[12]})/2" | bc -l`
+			   C[55]=${C[44]}; C[66]=${C[44]} ;;
+	# Cubic
+	[Cc]*)     C[22]=${C[11]}; C[33]=${C[11]}; C[55]=${C[44]}; C[66]=${C[44]}
+	           C[13]=${C[12]}; C[23]=${C[12]} ;;
+	# Hexagonal
+	[Hh]*)     C[22]=${C[11]}; C[55]=${C[44]}; C[23]=${C[13]}
+	           C[66]=`echo "(${C[11]}-${C[12]})/2" | bc -l` ;;
+	# Trigonal (6) 32, 3m, -3m
+	trig6*)    C[22]=${C[11]}; C[55]=${C[44]}; C[23]=${C[13]}; C[56]=${C[14]}
+	           C[24]=`echo "-1*${C[14]}" | bc -l`
+			   C[66]=`echo "(${C[11]}-${C[12]})/2" | bc -l` ;;
+	# Trigonal (7) 3, -3
+	trig7*)    C[22]=${C[11]}; C[55]=${C[44]}; C[23]=${C[13]}; C[46]=${C[25]}
+	           C[56]=${C[14]}
+			   C[15]=`echo "-1*${C[25]}" | bc -l`
+			   C[24]=`echo "-1*${C[14]}" | bc -l`
+			   C[66]=`echo "(${C[11]}-${C[12]})/2" | bc -l` ;;
+	# Tetragonal (6) 422, 4mm, -42m, 4/mmm
+	tet6*)     C[22]=${C[11]}; C[55]=${C[44]}; C[23]=${C[13]} ;;
+	# Tetragonal (7) 4, -4, 4/m
+	tet7*)     C[22]=${C[11]}; C[55]=${C[44]}; C[23]=${C[13]}
+	           C[26]=`echo "-1*${C[16]}" | bc -l` ;;  
+esac
+
+# Write constants to file
+for ((i=1; i<=6; i++)); do
+	for ((j=i; j<=6; j++)); do
+		ij=$i$j
+		C[ij]=${C[ij]:-0}  # Unfilled constants are set to 0
+		printf "%i %i % 8.2f%2s\n" $i $j ${C[ij]} e9
+	done
+done > "$TEMP"
+
+echo -e -n "Enter density in kg/m^3;\n   or V in A^3 and elements in unit cell: "
+read density
+
+# If we enter more than one thing, pass that to calc-den
+test_density=`echo $density | awk '{if(NF>1)print "0"; else print "1"}'`
+
+# Check that calc-den worked
+if [ ${test_density} -ne 1 ]; then
+	density=`calc-den $density` && calc_worked=1 || calc_worked=0
+fi	
+
+# Only try to writeout the density if the calculation worked
+if [[ "${calc_worked}" == "1" || "${test_density}" == "1" ]]; then
+	printf "%i %i % 8.2f\n" 7 7 $density >> $TEMP
+else
+	echo "Problem with the density calculation.  Ensure correct syntax:"
+	calc-den
+fi
+
+mv "$TEMP" "${file}" || rm -f "${TEMP}"
