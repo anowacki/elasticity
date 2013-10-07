@@ -20,8 +20,10 @@ program CIJ_Voigt
    logical :: supplied
    
    ! Check any command line arguments
+   if (command_argument_count() /= 2) call usage
+   
    if (command_argument_count() /= 0) then
-      ! Specfiy number of ECs fed in
+      ! Specify number of ECs fed in
       call get_arg("-n",necs,supplied=supplied)
       if (supplied) then
          if (necs /= 21 .and. necs /= 36) call usage

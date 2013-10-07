@@ -62,7 +62,10 @@ program axial_average
       subroutine usage
       !=========================================================================
          implicit none
-         write(0,'(a)') 'Usage: CIJ_axial_average [rotation axis (1|2|3)] [necs] < (ECs from stdin)'
+         write(0,'(a)') 'Usage: CIJ_axial_average [rotation axis (1|2|3)] ' // &
+         '[necs] (n rotations) < (ECs from stdin)', &
+         'Options:', &
+         '   (n rotations)  : Compute average with n different orientations about axis'
          stop
       end subroutine usage
       !------------------------------------------------------------------------
