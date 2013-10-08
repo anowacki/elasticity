@@ -9,7 +9,7 @@
 BINDIR=~nowacki/Applications/Elasticity/CIJ_plot/src/
 ##########################################
 
-function usage {
+usage () {
 	{
 	echo "`basename $0`: Plots phase velocity surfaces for sets of elastic constants."
 	echo "Usage: `basename $0` (-r density (.ecs file))"
@@ -32,6 +32,16 @@ function usage {
 	exit 1
 }
 
+# Wrapper function to make a temporary file with the desired suffix and exit the
+# script if we can't do so.
+make_temp_file () {
+	[ $# -ne 1 ] && echo "`basename $0`: make_temp_file: Require name of temp file" &&
+		exit 2
+	local f=/tmp/CIJ_plot."$1"XXXXXX
+	mktemp /tmp/CIJ_plot."$1"XXXXXX ||
+		{ echo "`basename $0`: make_temp_file: Can't create file $f"; exit 3; }
+}
+
 WIDTH=5
 vlength=0.3 # / cm
 
@@ -42,7 +52,6 @@ list=1   # Read from stdin
 PROJ=A   # Projections
 nlevels=10 # Numver of contours
 cmap=wysiwyg # Colour palette
-FIG=/tmp/CIJ_plot_`jot -r -p 10 1`.ps # Default temporary output file
 
 # Get options and density
 while [ -n "$1" ]; do
@@ -110,6 +119,9 @@ while [ -n "$1" ]; do
 	esac
 done
 
+# Set FIG to a temp file if not otherwise set
+[ -z "$FIG" ] && FIG=`make_temp_file ps`
+
 # Don't flip the seismic colourmap
 flip="-I"
 if [[ "$cmap" == "seis" ]]; then
@@ -152,11 +164,11 @@ fi
 ########################################
 # P wave velocity plot
 # rm -rf /tmp/CIJ_plot_*.{ps,P,S,F,cpt,grd}
-P=/tmp/CIJ_plot_`jot -r -p 10 1`.P
-S=/tmp/CIJ_plot_`jot -r -p 10 1`.S
-F=/tmp/CIJ_plot_`jot -r -p 10 1`.F
-CPT=/tmp/CIJ_plot_`jot -r -p 10 1`.cpt
-GRD=/tmp/CIJ_plot_`jot -r -p 10 1`.grd
+  P=`make_temp_file P`
+  S=`make_temp_file S`
+  F=`make_temp_file F`
+CPT=`make_temp_file cpt`
+GRD=`make_temp_file grd`
 
 echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels P > $P
 echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels S > $S
