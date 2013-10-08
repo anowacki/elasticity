@@ -10,22 +10,25 @@ BINDIR=~nowacki/Applications/Elasticity/CIJ_plot/src/
 ##########################################
 
 function usage {
-	echo "`basename $0`: Plots phase velocity surfaces for sets of elastic constants." > /dev/stderr
-	echo "Usage: `basename $0` (-r density (.ecs file))" > /dev/stderr
-	echo "Options:" > /dev/stderr
-	echo "	-b(atch)                : Don't display plot for batch plotting. (display)" > /dev/stderr
-	echo "	-c(pt) [colour palette] : Choose alternative colour palette." > /dev/stderr
-	echo "	                          Must be inbuilt to GMT. (wysiwyg)" > /dev/stderr
-	echo "	-h(elp)                 : Print this message." > /dev/stderr
-# Not implemented yet:
-#	echo "	-l(ower)                : Plot lower hemsiphere (upper)" > /dev/stderr
-	echo "	-n [no. contours]       : Number of contours (10)" > /dev/stderr
-	echo "	-norm(alise)            : Input ecs require density normalisation." > /dev/stderr
-	echo "	-o [outfile]            : Send output to output file. (temporary file)" > /dev/stderr
-	echo "	-p(roj) [projection]    : GMT code for projection (of A,E,G). (A)" > /dev/stderr
-	echo "	-s(cale) [vp1 vp2 avs1 avs2] : Set limits on colour scale.  (automatic)" > /dev/stderr
-	echo "	Density can be determined from .ecs file or specified.  Must be determined" > /dev/stderr
-	echo "	for list input either on command line with -r, or as last value on stdin." > /dev/stderr
+	{
+	echo "`basename $0`: Plots phase velocity surfaces for sets of elastic constants."
+	echo "Usage: `basename $0` (-r density (.ecs file))"
+	echo "Options:"
+	echo "	-b(atch)                : Don't display plot for batch plotting. (display)"
+	echo "	-c(pt) [colour palette] : Choose alternative colour palette."
+	echo "	                          Must be inbuilt to GMT. (wysiwyg)"
+	echo "	-h(elp)                 : Print this message."
+# Not implemented yet
+#	echo "	-l(ower)                : Plot lower hemsiphere (upper)"
+	echo "	-n [no. contours]       : Number of contours (10)"
+	echo "	-norm(alise)            : Input ecs require density normalisation."
+	echo "	-o [outfile]            : Send output to output file. (temporary file)"
+	echo "	-p(roj) [projection]    : GMT code for projection (of A,E,G). (A)"
+	echo "	-s(cale) [vp1 vp2 avs1 avs2] : Set limits on colour scale.  (automatic)"
+	echo "  -t(itle) [title string] : Set title for plot, including GMT codes. (none)"
+	echo "	Density can be determined from .ecs file or specified.  Must be determined"
+	echo "	for list input either on command line with -r, or as last value on stdin."
+	} > /dev/stderr
 	exit 1
 }
 
@@ -64,6 +67,10 @@ while [ -n "$1" ]; do
 			avs2=$5
 			shift 5
 			;;
+		-t|-title)
+			title="$2"
+			shift 2
+			;;
 		-o)
 			FIG="$2"
 			OUTPUT=1
@@ -94,7 +101,7 @@ while [ -n "$1" ]; do
 			list=0
 			file=$1
 			if ! [ -r "$1" ]; then
-				echo "$0: unrecognised option or can't read file: $1" > /dev/stderr
+				echo "`basename $0`: unrecognised option or can't read file: $1" > /dev/stderr
 				usage
 				exit 2
 			fi
@@ -130,7 +137,7 @@ fi
 
 # If no r supplied and we aren't reading from a .ecs file, stop
 if [ $list -eq 1 -a -z "$rho" ]; then
-	echo "$0: must either use rho of .ecs file or specify if reading ecs from stdin." > /dev/stderr
+	echo "`basename $0`: must either use rho of .ecs file or specify if reading ecs from stdin." > /dev/stderr
 	exit 5
 elif [ $list -eq 0 -a -z "$rho" ]; then   # Taking rho from .ecs file
 	rho=`awk '$1==7&&$2==7{print $3}' $file`
@@ -197,10 +204,16 @@ echo "0 90 12 0 0 CM A@%2%V@%%@-S@- / %" |\
 
 
 # S fast orientation plot
-# awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
-# 	psxy -J -R -SVB0.08c/0/0 -Gblack -W0.005c,white -N -O >> "$FIG"
 awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
-	psxy -J -R -SvB0.08c/0/0 -Gblack -W0.005c,white -N -O >> "$FIG"
+	psxy -J -R -SvB0.08c/0/0 -Gblack -W0.005c,white -N -O -K >> "$FIG"
+
+######################################
+# Title
+[ -n "$title" ] && echo "0 90 13 0 0 CM $title" |
+	pstext -D`echo "-${WIDTH}*0.75" | bc -l`c/`echo "0.3*$WIDTH" | bc -l`c -J -R -O -K -N >> "$FIG"
+
+# Finalise Postscript
+psxy -J -R -O -T >> "$FIG"
 
 [ -z "$batch" ] && gv "$FIG" 2>/dev/null
 
