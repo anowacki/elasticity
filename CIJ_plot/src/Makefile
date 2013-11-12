@@ -17,7 +17,7 @@ CIJ_plot_cij2phasevels: CIJ_plot_cij2phasevels.o
 	$(FC) ${FCOPTS} -o CIJ_plot_cij2phasevels -L $(LIBDIR) ${LIBS} CIJ_plot_cij2phasevels.o
 
 %.o: %.f90
-	$(FC) ${FCOPTS} -c $*.f90
+	$(FC) ${FCOPTS} -J $(MODDIR) -c $*.f90
 
 .PHONY: clean
 
