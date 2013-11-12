@@ -1,5 +1,5 @@
 FC = gfortran
-FFLAGS = -Wall -fbounds-check -frange-check -g -ggdb -O3
+FCOPTS = -Wall -fbounds-check -frange-check -g -ggdb -O3
 BINDIR = ~/Applications/bin
 LIBDIR = ~/Applications/modules/lib
 MODDIR = ~/Applications/modules/mods

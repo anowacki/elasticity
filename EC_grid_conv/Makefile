@@ -1,8 +1,9 @@
 FC = gfortran
-FFLAGS = -O3
-BINDIR = ~/Applications/bin
-
-MOD = ~/Applications/modules/EC_grid.f90
+FCOPTS = -O3
+BINDIR = ~nowacki/Applications/bin
+LIBDIR = ~nowacki/Applications/modules/lib
+MODDIR = ~nowacki/Applications/modules/mods
+LIBS = -lEC_grid
 
 default: all
 
@@ -12,13 +13,16 @@ install: EC_grid_asc2bin EC_grid_bin2asc
 	/bin/cp EC_grid_asc2bin $(BINDIR)/EC_grid_asc2bin
 	/bin/cp EC_grid_bin2asc $(BINDIR)/EC_grid_bin2asc
 
-EC_grid_asc2bin: EC_grid_asc2bin.f90
-	$(FC) ${FFLAGS} -o EC_grid_asc2bin $(MOD) EC_grid_asc2bin.f90
+EC_grid_asc2bin: EC_grid_asc2bin.o
+	$(FC) ${FFLAGS} -o EC_grid_asc2bin -L $(LIBDIR) ${LIBS} EC_grid_asc2bin.o
 
-EC_grid_bin2asc: EC_grid_bin2asc.f90
-	$(FC) ${FFLAGS} -o EC_grid_bin2asc $(MOD) EC_grid_bin2asc.f90
+EC_grid_bin2asc: EC_grid_bin2asc.o
+	$(FC) ${FFLAGS} -o EC_grid_bin2asc -L $(LIBDIR) ${LIBS} EC_grid_bin2asc.o
+
+%.o: %.f90
+	$(FC) ${FCOPTS} -c -J $(MODDIR) $*.f90
 
 .PHONY: clean
 
 clean:
-	/bin/rm EC_grid_asc2bin EC_grid_bin2asc
+	/bin/rm -f *.o EC_grid_asc2bin EC_grid_bin2asc

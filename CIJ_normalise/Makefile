@@ -1,4 +1,4 @@
-BINDIR = /Users/nowacki/Applications/bin
+BINDIR = ~nowacki/Applications/bin
 
 all: install
 

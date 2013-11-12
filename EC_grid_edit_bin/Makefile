@@ -1,8 +1,8 @@
 FC = gfortran
 FCOPTS = -g -fbounds-check
-BINDIR = /Users/nowacki/Applications/bin
-MODDIR = /Users/nowacki/Applications/modules/mods
-LIBDIR = /Users/nowacki/Applications/modules/lib
+BINDIR = ~nowacki/Applications/bin
+LIBDIR = ~nowacki/Applications/modules/lib
+MODDIR = ~nowacki/Applications/modules/mods
 LIBS = -lEC_grid -lanisotropy_ajn
 
 all: progs
@@ -13,10 +13,10 @@ install: all
 	/bin/cp -f EC_grid_edit_bin $(BINDIR)/
 
 EC_grid_edit_bin: EC_grid_edit_bin.o 
-	$(FC) ${FCOPTS} -o $@ -J$(MODDIR) -L$(LIBDIR) ${LIBS} $^
+	$(FC) ${FCOPTS} -o $@ -L $(LIBDIR) ${LIBS} $^
 
 %.o: %.f90
-	$(FC) ${FCOPTS} -c -I$(MODDIR) $*.f90
+	$(FC) ${FCOPTS} -c -I $(MODDIR) $*.f90
 
 .PHONY: clean
 

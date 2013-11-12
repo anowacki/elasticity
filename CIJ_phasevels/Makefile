@@ -1,16 +1,20 @@
 FC = gfortran
 FCOPTS = 
-MODPATH = ~/Applications/modules
-MODS = $(MODPATH)/EmatrixUtils.f90 $(MODPATH)/anisotropy_ajn/anisotropy_ajn.f90
 BINDIR = ~nowacki/Applications/bin
+LIBDIR = ~nowacki/Applications/modules/lib
+MODDIR = ~nowacki/Applications/modules/mods
+LIBS = -lanisotropy_ajn -lEmatrixUtils
 
-default: CIJ_phasevels
+all: CIJ_phasevels
 
 install: CIJ_phasevels
 	/bin/cp -f CIJ_phasevels $(BINDIR)/
 
-CIJ_phasevels: CIJ_phasevels.f90 ${MODS}
-	$(FC) ${FCOPTS} -o CIJ_phasevels ${MODS} CIJ_phasevels.f90
+CIJ_phasevels: CIJ_phasevels.o
+	$(FC) ${FCOPTS} -o CIJ_phasevels -L $(LIBDIR) ${LIBS} CIJ_phasevels.o
+
+%.o: %.f90
+	$(FC) ${FCOPTS} -c -J $(MODDIR) $*.f90
 
 .PHONY: clean
 

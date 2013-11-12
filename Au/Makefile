@@ -1,20 +1,21 @@
 FC = gfortran
 FCOPTS = -O2
-BIN = ~nowacki/Applications/bin
+BINDIR = ~nowacki/Applications/bin
+LIBDIR = ~nowacki/Applications/modules/lib
+MODDIR = ~nowacki/Applications/modules/mods
+LIBS = -lanisotropy_ajn
 
 default: Au EC_grid2Au.bash
 
 install: Au EC_grid2Au.bash
-	/bin/cp -f Au $(BIN)/
-	/bin/cp -f EC_grid2Au.bash $(BIN)/EC_grid2Au
+	/bin/cp -f Au $(BINDIR)/
+	/bin/cp -f EC_grid2Au.bash $(BINDIR)/EC_grid2Au
 
-Au: Au.o anisotropy_ajn.o
-	$(FC) $(FCOPTS) -o Au Au.o anisotropy_ajn.o
-
-Au.o: anisotropy_ajn.o
+Au: Au.o
+	$(FC) $(FCOPTS) -o Au -L $(LIBDIR) ${LIBS} Au.o
 
 %.o: %.f90
-	$(FC) $(FCOPTS) -c $*.f90
+	$(FC) $(FCOPTS) -c -J $(MODDIR) $*.f90
 
 .PHONY: clean
 

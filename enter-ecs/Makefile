@@ -1,9 +1,11 @@
-BIN = ~nowacki/Applications/bin
+BINDIR = ~nowacki/Applications/bin
 
 SCRIPTS = calc-den enter-ecs
 
+all: ${SCRIPTS}
+
 install: ${SCRIPTS}
-	/bin/cp ${SCRIPTS} $(BIN)/
+	/bin/cp ${SCRIPTS} $(BINDIR)/
 
 .PHONY: clean
 
