@@ -1,7 +1,7 @@
 BINDIR = ~nowacki/Applications/bin
 
 install: CIJ_disp.bash
-	/bin/cp -f CIJ_disp.bash $(BINDIR)/CIJ_disp
+	/bin/cp CIJ_disp.bash $(BINDIR)/CIJ_disp
 
 .PHONY: clean
 

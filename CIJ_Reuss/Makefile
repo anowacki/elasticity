@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn -lget_args
 all: CIJ_Reuss
 
 install: CIJ_Reuss
-	/bin/cp -f CIJ_Reuss $(BINDIR)/
+	/bin/cp CIJ_Reuss $(BINDIR)/
 
 CIJ_Reuss: CIJ_Reuss.o
 	$(FC) ${FCOPTS} -o $@ -L $(LIBDIR) ${LIBS} $^

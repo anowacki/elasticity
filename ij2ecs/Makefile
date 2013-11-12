@@ -3,7 +3,7 @@ BINDIR = ~nowacki/Applications/bin
 all: ij2ecs
 
 install: all
-	/bin/cp -f ij2ecs $(BINDIR)/
+	/bin/cp ij2ecs $(BINDIR)/
 
 .PHONY: clean
 

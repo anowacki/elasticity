@@ -10,7 +10,7 @@ all: progs
 progs: EC_grid_interp_bin
 
 install: all
-	/bin/cp -f EC_grid_interp_bin $(BINDIR)/
+	/bin/cp EC_grid_interp_bin $(BINDIR)/
 
 EC_grid_interp_bin: EC_grid_interp_bin.o 
 	$(FC) ${FCOPTS} -o $@ -J $(MODDIR) -L $(LIBDIR) ${LIBS} $^

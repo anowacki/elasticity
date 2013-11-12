@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn -lEmatrixUtils -lspherical_geometry
 all: CIJ_iso_av
 
 install: all
-	/bin/cp -f CIJ_iso_av $(BINDIR)/
+	/bin/cp CIJ_iso_av $(BINDIR)/
 
 CIJ_iso_av: CIJ_iso_av.o 
 	$(FC) ${FCOPTS} -o CIJ_iso_av -L $(LIBDIR) ${LIBS} CIJ_iso_av.o

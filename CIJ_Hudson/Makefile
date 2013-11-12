@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn
 all: CIJ_Hudson
 
 install: CIJ_Hudson
-	/bin/cp -f CIJ_Hudson $(BINDIR)/CIJ_Hudson
+	/bin/cp CIJ_Hudson $(BINDIR)/CIJ_Hudson
 
 CIJ_Hudson: CIJ_Hudson.o
 	$(FC) ${FCOPTS} -o CIJ_Hudson -L $(LIBDIR) ${LIBS} CIJ_Hudson.o

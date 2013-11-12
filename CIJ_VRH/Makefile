@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn
 all: CIJ_VRH
 
 install: all
-	/bin/cp -f CIJ_VRH $(BINDIR)/
+	/bin/cp CIJ_VRH $(BINDIR)/
 
 CIJ_VRH: CIJ_VRH.o
 	$(FC) ${FCOPTS} -o CIJ_VRH -L $(LIBDIR) ${LIBS} CIJ_VRH.o

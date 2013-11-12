@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn -lget_args
 all: CIJ_Voigt
 
 install: CIJ_Voigt
-	/bin/cp -f CIJ_Voigt $(BINDIR)/
+	/bin/cp CIJ_Voigt $(BINDIR)/
 
 CIJ_Voigt: CIJ_Voigt.o
 	$(FC) ${FCOPTS} -o $@ -L $(LIBDIR) ${LIBS} $^

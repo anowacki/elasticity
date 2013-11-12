@@ -11,7 +11,7 @@ all: progs
 progs: EC_grid_new_bin
 
 install: all
-	/bin/cp -f EC_grid_new_bin $(BINDIR)/
+	/bin/cp EC_grid_new_bin $(BINDIR)/
 
 EC_grid_new_bin: EC_grid_new_bin.o 
 	$(FC) ${FCOPTS} -o $@ -J $(MODDIR) -L $(LIBDIR) ${LIBS} $^

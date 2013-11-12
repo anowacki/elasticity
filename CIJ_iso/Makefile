@@ -3,7 +3,7 @@ BINDIR = ~nowacki/Applications/bin
 all: install
 
 install: CIJ_iso.bash
-	/bin/cp -f CIJ_iso.bash $(BINDIR)/CIJ_iso
+	/bin/cp CIJ_iso.bash $(BINDIR)/CIJ_iso
 
 .PHONY: clean
 

@@ -10,7 +10,7 @@ all: progs
 progs: EC_grid_edit_bin
 
 install: all
-	/bin/cp -f EC_grid_edit_bin $(BINDIR)/
+	/bin/cp EC_grid_edit_bin $(BINDIR)/
 
 EC_grid_edit_bin: EC_grid_edit_bin.o 
 	$(FC) ${FCOPTS} -o $@ -L $(LIBDIR) ${LIBS} $^

@@ -3,7 +3,7 @@ BINDIR = ~nowacki/Applications/bin
 all: ijxyz2ij
 
 install: all
-	/bin/cp -f ijxyz2ij $(BINDIR)/
+	/bin/cp ijxyz2ij $(BINDIR)/
 
 .PHONY: clean
 

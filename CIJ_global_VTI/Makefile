@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn
 all: CIJ_global_VTI
 
 install: CIJ_global_VTI
-	/bin/cp -f CIJ_global_VTI $(BINDIR)/CIJ_global_VTI
+	/bin/cp CIJ_global_VTI $(BINDIR)/CIJ_global_VTI
 
 CIJ_global_VTI: CIJ_global_VTI.o
 	$(FC) ${FCOPTS} -o CIJ_global_VTI -L $(LIBDIR) ${LIBS} CIJ_global_VTI.o

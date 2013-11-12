@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn
 all: CIJ_thom CIJ_thom_list
 
 install: CIJ_thom CIJ_thom_list
-	/bin/cp -f CIJ_thom CIJ_thom_list $(BINDIR)/
+	/bin/cp CIJ_thom CIJ_thom_list $(BINDIR)/
 
 CIJ_thom: CIJ_thom.o
 	$(FC) ${FCOPTS} -o CIJ_thom -L $(LIBDIR) ${LIBS} CIJ_thom.o

@@ -8,8 +8,8 @@ LIBS = -lanisotropy_ajn
 default: Au EC_grid2Au.bash
 
 install: Au EC_grid2Au.bash
-	/bin/cp -f Au $(BINDIR)/
-	/bin/cp -f EC_grid2Au.bash $(BINDIR)/EC_grid2Au
+	/bin/cp Au $(BINDIR)/
+	/bin/cp EC_grid2Au.bash $(BINDIR)/EC_grid2Au
 
 Au: Au.o
 	$(FC) $(FCOPTS) -o Au -L $(LIBDIR) ${LIBS} Au.o

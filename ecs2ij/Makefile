@@ -3,7 +3,7 @@ BINDIR = ~nowacki/Applications/bin
 all: install
 
 install: ecs2ij
-	/bin/cp -f ecs2ij $(BINDIR)/
+	/bin/cp ecs2ij $(BINDIR)/
 
 .PHONY: clean
 

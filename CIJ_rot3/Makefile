@@ -11,7 +11,7 @@ default: all
 all: CIJ_rot3
 
 install: CIJ_rot3
-	/bin/cp -f CIJ_rot3 $(BINDIR)/
+	/bin/cp CIJ_rot3 $(BINDIR)/
 
 CIJ_rot3: CIJ_rot3.o
 	$(FC) ${FCOPTS} -o CIJ_rot3 -L $(LIBDIR) ${LIBS} CIJ_rot3.o

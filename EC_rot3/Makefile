@@ -8,7 +8,7 @@ LIBS = -lconstants -lanisotropy_ajn -lEC_grid
 all: EC_rot3 EC_rot3_xyz
 
 install: all
-	cp -f EC_rot3 EC_rot3_xyz $(BINDIR)/
+	cp EC_rot3 EC_rot3_xyz $(BINDIR)/
 
 EC_rot3: EC_rot3.o
 	$(FC) ${FCOPTS} -o EC_rot3 -L $(LIBDIR) ${LIBS} EC_rot3.o

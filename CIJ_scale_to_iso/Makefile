@@ -8,7 +8,7 @@ LIBS = -lanisotropy_ajn -lEmatrixUtils -lspherical_geometry
 all: CIJ_scale_to_iso
 
 install: all
-	/bin/cp -f CIJ_scale_to_iso $(BINDIR)/
+	/bin/cp CIJ_scale_to_iso $(BINDIR)/
 
 CIJ_scale_to_iso: CIJ_scale_to_iso.o 
 	$(FC) ${FCOPTS} -o CIJ_scale_to_iso -L $(LIBDIR) ${LIBS} CIJ_scale_to_iso.o
