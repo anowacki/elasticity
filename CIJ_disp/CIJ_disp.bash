@@ -1,6 +1,15 @@
 #!/bin/bash
 # Display 21 or 36 ecs in a nice 6x6 grid.
 
+usage () {
+	{
+		echo "Usage: `basename $0` (density) < (36|21 ecs from stdin)"
+		echo "Displays elastic constants in a nice 6x6 matrix."
+		echo "If supplied, use first argument as density to normalise constants."
+	} 1>&2
+	exit 1
+}
+
 # Default to density-noramlised constants
 r=1
 
@@ -9,10 +18,8 @@ if [ $# -eq 1 ]; then
 	r=$1
 fi
 
-if [ $# -gt 1 ]; then
-	echo "`basename $0`: Display a line of 21 or 36 elastic constants in a 6x6 matrix." > /dev/stderr
-	exit 1
-fi
+# If the first argument isn't a valid number, assume we want the usage
+[ $# -ge 1 ] && { printf "%f" "$1" >/dev/null 2>&1 || usage; }
 
 awk -v r=$r '
 	NF == 36 {
