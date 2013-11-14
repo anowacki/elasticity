@@ -17,7 +17,7 @@ program CIJ_Hudson_prog
       write(0,'(a)') 'Usage:  CIJ_global_VTI vp vs rho xi phi eta', &
                      '        or', &
                      '        CIJ_global_VTI < [list of vp vs rho xi phi eta]',&
-                     'Inputs: vp,vs: Voigt isotropic average velocities (km/s)',&
+                     'Inputs: vp,vs: Voigt isotropic average velocities (m/s)',&
                      '        rho:   Density (kg/m^3)',&
                      '        xi,phi,eta: Dimensionless radial anisotropy parameters',&
                      'Output: 36 elastic constants, normalised by density'
