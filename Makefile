@@ -27,7 +27,7 @@ DIRS = Au \
        EC_grid_inquire \
        EC_grid_interp \
        EC_grid_new \
-       EC_grid_normalise_bin/src \
+       EC_grid_normalise_bin \
        EC_grid_plot_bin \
        EC_rot3 \
        GPa2Pa \
