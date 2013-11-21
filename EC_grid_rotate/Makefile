@@ -13,10 +13,10 @@ install: EC_grid_rotate_bin
 	/bin/cp EC_grid_rotate_bin $(BINDIR)/
 
 EC_grid_rotate_bin: EC_grid_rotate_bin.o
-	$(FC) ${FFLAGS} -o $@ -J $(MODDIR) -L $(LIBDIR) ${LIB} $^
+	$(FC) ${FCOPTS} -o $@ -J $(MODDIR) -L $(LIBDIR) ${LIB} $^
 
 EC_grid_rotate_bin.o: EC_grid_rotate_bin.f90
-	$(FC) ${FFLAGS} -c -J $(MODDIR) $^
+	$(FC) ${FCOPTS} -c -J $(MODDIR) $^
 
 .PHONY: clean
 
