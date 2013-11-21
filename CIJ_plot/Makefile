@@ -10,6 +10,7 @@ all: CIJ_plot
 
 install: all
 	/bin/cp CIJ_plot.bash $(BINDIR)/CIJ_plot
+	/bin/cp CIJ_plot_cij2phasevels $(BINDIR)
 
 CIJ_plot: CIJ_plot.bash CIJ_plot_cij2phasevels
 
