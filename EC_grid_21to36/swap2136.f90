@@ -9,12 +9,12 @@ program EC_grid_21to36
    real               :: test_36(6,6),test_21(3,7)
    integer            :: iostatus,necs,a,b,c
    
-   if (iargc() /= 2) then
+   if (command_argument_count() /= 2) then
 	  write(0,'(a)') 'Usage: 21to36 [ECxyz file 1] [ECxyz file 2]'
 	  stop
    endif
    
-   call getarg(1,fname)
+   call get_command_argument(1,fname)
    
 ! Test for which way round the input file is
    open(10,file=fname,status='old')
@@ -42,7 +42,7 @@ program EC_grid_21to36
    endif
    
 !  Write out to the new file
-   call getarg(2,fname)
+   call get_command_argument(2,fname)
    call EC_grid_write(trim(fname),grid,necs=necs)
 
 

@@ -10,7 +10,7 @@ program cijkl2Cij_prog
    real(8) :: cijkl(3,3,3,3), Cij(6,6)
    integer :: iostatus,i,j,k,l
    
-   if (iargc() /= 0) then
+   if (command_argument_count() /= 0) then
       write(0,'(a)') 'Usage: cijkl2Cij < [list of 3x3x3x3 elastic constants]'
       stop
    endif

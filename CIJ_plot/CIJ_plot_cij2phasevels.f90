@@ -35,7 +35,7 @@ program CIJ_plot_cij2phasevels
    end interface
    
 !  Choose the output format we want:
-   call getarg(1,arg)
+   call get_command_argument(1,arg)
    
 !  Read density-normalised ecs and density from stdin
    read(*,*) ((C(i,j),j=1,6),i=1,6),rho

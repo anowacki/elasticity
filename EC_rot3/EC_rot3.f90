@@ -7,16 +7,16 @@ use anisotropy_ajn
 real(rs)  :: C(6,6),rho,Ctemp(6,6),a,b,g
 character(len=250) :: fname
 
-if (iargc() /= 4) then
+if (command_argument_count() /= 4) then
    write(0,*) 'Usage: EC_rot3 [alpha] [beta] [gamma] [.ecs file] > [output file]'
    stop
 endif
 
-call getarg(1,fname); read(fname,*) a
-call getarg(2,fname); read(fname,*) b
-call getarg(3,fname); read(fname,*) g
+call get_command_argument(1,fname); read(fname,*) a
+call get_command_argument(2,fname); read(fname,*) b
+call get_command_argument(3,fname); read(fname,*) g
 
-call getarg(4,fname)
+call get_command_argument(4,fname)
 
 call CIJ_load(fname,C,rho)
 

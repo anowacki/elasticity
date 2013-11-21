@@ -23,7 +23,7 @@ integer :: ix1,ix2,iy1,iy2,iz1,iz2, nx, ny, nz, lx, ly, lz
 integer :: ierr, iarg, i, j, ii, ix, iy, iz
 logical :: llist = .false., lecs = .false., lij = .false.
 
-if (iargc() == 0) then
+if (command_argument_count() == 0) then
    write(0,'(a)') 'EC_grid_edit_bin: Edit points of binary grid file.',&
                   'Usage: EC_grid_edit_bin (options) [file]',&
                   'Options:',&
@@ -39,31 +39,31 @@ endif
 !  Process arguments
 
 !  -in option
-   if (iargc() == 2) then
-      call getarg(1,arg)
+   if (command_argument_count() == 2) then
+      call get_command_argument(1,arg)
       if (arg(1:2) /= '-l') then
          write(*,'(2a)') 'EC_grid_edit_bin: Insufficient arguments or unrecognised option: ',trim(arg)
          stop
       endif
-      call getarg(2,file)
+      call get_command_argument(2,file)
       llist = .true.
       
-   elseif (iargc() == 8) then   ! -ij
-      call getarg(1,arg)    
+   elseif (command_argument_count() == 8) then   ! -ij
+      call get_command_argument(1,arg)    
       if (arg(1:2) == '-i') then
          lij = .true.
-         call getarg(8,file)
+         call get_command_argument(8,file)
       else
          write(0,'(2a)') 'EC_grid_edit_bin: Insufficient arguments or unrecognised option: ',trim(arg)
          stop
       endif
    
-   elseif (iargc() == 9) then  ! -ecs
-      call getarg(1,arg)    
+   elseif (command_argument_count() == 9) then  ! -ecs
+      call get_command_argument(1,arg)    
       if (arg(1:2) == '-e') then
          lecs = .true.
-         call getarg(8,ecsfile)
-         call getarg(9,file)
+         call get_command_argument(8,ecsfile)
+         call get_command_argument(9,file)
       else
          write(0,'(2a)') 'EC_grid_edit_bin: Insufficient arguments or unrecognised option: ',trim(arg)
          stop
@@ -77,12 +77,12 @@ endif
    
 !  Get range
    if (lij .or. lecs) then
-      call getarg(2,arg);  read(arg,*) ix1
-      call getarg(3,arg);  read(arg,*) ix2
-      call getarg(4,arg);  read(arg,*) iy1
-      call getarg(5,arg);  read(arg,*) iy2
-      call getarg(6,arg);  read(arg,*) iz1
-      call getarg(7,arg);  read(arg,*) iz2
+      call get_command_argument(2,arg);  read(arg,*) ix1
+      call get_command_argument(3,arg);  read(arg,*) ix2
+      call get_command_argument(4,arg);  read(arg,*) iy1
+      call get_command_argument(5,arg);  read(arg,*) iy2
+      call get_command_argument(6,arg);  read(arg,*) iz1
+      call get_command_argument(7,arg);  read(arg,*) iz2
 !  Check range is valid.  Okay for ix1 == ix2 etc.: this refers to single cell
       if (ix1 > ix2 .or. iy1 > iy2 .or. iz1 > iz2) then
          write(0,'(a)') 'EC_grid_edit_bin: Location ranges invalid (e.g., x1 > x2).'

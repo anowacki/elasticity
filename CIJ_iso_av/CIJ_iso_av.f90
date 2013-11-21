@@ -20,10 +20,10 @@ integer :: ioerr,nopt
 !  Check for correct invocation and get options
 nopt = 0
 vel_out = .false.
-if (iargc() > 0) then
+if (command_argument_count() > 0) then
    i = 1
-outer:do while (i <= iargc())
-      call getarg(i,arg)
+outer:do while (i <= command_argument_count())
+      call get_command_argument(i,arg)
       if (arg(1:1) == '-') then
          if (arg(1:2) == '-v') then      ! Only want isotropic average of velocities
             vel_out = .true.
@@ -48,7 +48,7 @@ endif
 call sphere_sample_local(lon,lat)
 
 !  If no arguments, loop overs lines of stdin and send out isotropic versions
-if (iargc()-nopt == 0) then
+if (command_argument_count()-nopt == 0) then
    ioerr = 0
    do while (ioerr == 0)
       read(*,*,iostat=ioerr) ((C(i,j),j=1,6),i=1,6),r
@@ -67,9 +67,9 @@ if (iargc()-nopt == 0) then
 
 !  If arguments, these are .ecs files
 else
-   n = iargc() - nopt
-   do ifile=nopt+1,iargc()
-      call getarg(ifile,file)
+   n = command_argument_count() - nopt
+   do ifile=nopt+1,command_argument_count()
+      call get_command_argument(ifile,file)
       inquire(file=file,exist=file_exists)
       if (.not.file_exists) then
          write(0,'(a)') 'CIJ_iso: file "' // trim(file) // '" does not exist.',&

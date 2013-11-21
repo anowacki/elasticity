@@ -13,7 +13,7 @@ program CIJ_Hudson_prog
    character(len=80) :: arg
    integer :: i,j,iostatus
    
-   if (iargc() /= 0 .and. iargc() /= 6) then
+   if (command_argument_count() /= 0 .and. command_argument_count() /= 6) then
       write(0,'(a)') 'Usage:  CIJ_global_VTI vp vs rho xi phi eta', &
                      '        or', &
                      '        CIJ_global_VTI < [list of vp vs rho xi phi eta]',&
@@ -25,14 +25,14 @@ program CIJ_Hudson_prog
    endif
    
 !  Called in one-shot mode
-   if (iargc() == 6) then
+   if (command_argument_count() == 6) then
       !  Get arguments
-      call getarg(1,arg);  read(arg,*) vp
-      call getarg(2,arg);  read(arg,*) vs
-      call getarg(3,arg);  read(arg,*) rho
-      call getarg(4,arg);  read(arg,*) xi
-      call getarg(5,arg);  read(arg,*) phi
-      call getarg(6,arg);  read(arg,*) eta
+      call get_command_argument(1,arg);  read(arg,*) vp
+      call get_command_argument(2,arg);  read(arg,*) vs
+      call get_command_argument(3,arg);  read(arg,*) rho
+      call get_command_argument(4,arg);  read(arg,*) xi
+      call get_command_argument(5,arg);  read(arg,*) phi
+      call get_command_argument(6,arg);  read(arg,*) eta
       
       !  Calculate effective elasticity tensor and write out
       C = CIJ_global_VTI(vp,vs,rho,xi,phi,eta)

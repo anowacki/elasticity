@@ -14,7 +14,7 @@ real(rs) :: vp,vs,rho,del,c,vpi,vsi,rhoi,CTaW(6,6),rhoTaW
 integer :: iostatus
 
 !  Check number of arguments
-   if (iargc() /= 8 .and. iargc() /= 0) then
+   if (command_argument_count() /= 8 .and. command_argument_count() /= 0) then
       write(0,'(a)') 'Usage: CIJ_TandW',&
        '   Create elastic constants for aligned ellipsoidal inclusions using the theory of Tandon and Weng (1984)',&
        ' Input:',&
@@ -29,15 +29,15 @@ integer :: iostatus
    endif
    
 !  Supplied input on command line
-   if (iargc() == 8) then
-      call getarg(1,arg); read(arg,*) vp
-      call getarg(2,arg); read(arg,*) vs
-      call getarg(3,arg); read(arg,*) rho
-      call getarg(4,arg); read(arg,*) del
-      call getarg(5,arg); read(arg,*) c
-      call getarg(6,arg); read(arg,*) vpi
-      call getarg(7,arg); read(arg,*) vsi
-      call getarg(8,arg); read(arg,*) rhoi
+   if (command_argument_count() == 8) then
+      call get_command_argument(1,arg); read(arg,*) vp
+      call get_command_argument(2,arg); read(arg,*) vs
+      call get_command_argument(3,arg); read(arg,*) rho
+      call get_command_argument(4,arg); read(arg,*) del
+      call get_command_argument(5,arg); read(arg,*) c
+      call get_command_argument(6,arg); read(arg,*) vpi
+      call get_command_argument(7,arg); read(arg,*) vsi
+      call get_command_argument(8,arg); read(arg,*) rhoi
 
 !  CIJ_tandon_and_weng supplies ecs density-normalised!
       call CIJ_tandon_and_weng(vp,vs,rho,del,c,vpi,vsi,rhoi,CTaW,rhoTaW)

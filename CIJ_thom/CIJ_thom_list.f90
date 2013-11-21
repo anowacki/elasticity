@@ -12,7 +12,7 @@ program CIJ_thom_list
    real(8) :: vp,vs,rho,del,eps,gam
    integer :: iostatus
    
-   if (iargc() /= 0) then
+   if (command_argument_count() /= 0) then
       write(0,'(a)') 'Usage:  CIJ_thom < [vp] [vs] [rho] [delta] [epsilon] [gamma]',&
                      '  Rotationally symmetric about 3-axis (vertical)',&
                      '  Reads parameters from stdin',&

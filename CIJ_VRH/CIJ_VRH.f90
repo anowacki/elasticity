@@ -23,7 +23,7 @@ character(len=250)  :: file
 integer :: ioerr
 
 !  Check for correct invocation
-if (modulo(iargc(),2) /= 0) then
+if (modulo(command_argument_count(),2) /= 0) then
    write(0,'(a)') &
    'Usage:', &
    '   CIJ_VRH < [input] > [output]', &
@@ -38,7 +38,7 @@ endif
 
 !  Loop through lines of stdin in, which each contain volume fraction, and then 
 !  36 elastic constants
-if (iargc() == 0) then
+if (command_argument_count() == 0) then
    ioerr = 0
    i = 1
    do while (ioerr == 0)
@@ -62,11 +62,11 @@ if (iargc() == 0) then
 !  Read the .ecs files from the command line and mix them in the proportions given
 !  by every second command line argument
 else
-   n = iargc()/2
+   n = command_argument_count()/2
    !  Loop over input files
    do i=1,n
-      call getarg(2*i-1,file)  ! Get .ecs file
-      call getarg(2*i,  arg)
+      call get_command_argument(2*i-1,file)  ! Get .ecs file
+      call get_command_argument(2*i,  arg)
       read(arg,*) VF(i)
       call CIJ_load(file,Ctemp,rtemp)
       C(i,:,:) = Ctemp/rtemp

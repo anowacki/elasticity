@@ -31,8 +31,8 @@ program Au
    character(len=20) :: arg
    
 !  Check for command line options
-   if (iargc() > 0) then
-      call getarg(1,arg)
+   if (command_argument_count() > 0) then
+      call get_command_argument(1,arg)
       read(arg,*,iostat=iostatus) nec
       if (iostatus /= 0 .or. (nec /= 21 .and. nec /= 36)) then
          write(0,'(3a)') 'Argument "',trim(arg),'" not understood.'

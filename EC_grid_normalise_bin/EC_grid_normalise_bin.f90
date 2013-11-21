@@ -25,7 +25,7 @@ program EC_grid_normalise_bin
    integer :: nver
 
    ! Check arguments
-   if (iargc() /= 2 .and. iargc() /= 3) then
+   if (command_argument_count() /= 2 .and. command_argument_count() /= 3) then
       write(0,'(a)') 'Usage: EC_grid_normalise_bin [multiplier] [infile] (outfile)', &
                      '   Multiplies every point in infile by a constant value.', &
                      '   If outfile not supplied, infile is overwritten.'
@@ -33,11 +33,11 @@ program EC_grid_normalise_bin
    endif
 
    ! Get arguments
-   call getarg(1,arg);  read(arg,*) multiplier
-   call getarg(2,infile)
+   call get_command_argument(1,arg);  read(arg,*) multiplier
+   call get_command_argument(2,infile)
    ! If we've specified a different outfile, read that in; otherwise use infile
-   if (iargc() == 3) then
-      call getarg(3,outfile)
+   if (command_argument_count() == 3) then
+      call get_command_argument(3,outfile)
    else
       outfile = infile
    endif
