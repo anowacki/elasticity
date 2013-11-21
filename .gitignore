@@ -13,7 +13,7 @@ CIJ_global_VTI/CIJ_global_VTI
 CIJ_iso_av/CIJ_iso_av
 CIJ_normalise/CIJ_normalise
 CIJ_phasevels/CIJ_phasevels
-CIJ_plot/src/CIJ_plot_cij2phasevels
+CIJ_plot/CIJ_plot_cij2phasevels
 CIJ_rot3/CIJ_rot3
 CIJ_scale_to_iso/CIJ_scale_to_iso
 CIJ_thom/CIJ_thom

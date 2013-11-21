@@ -15,7 +15,7 @@ DIRS = Au \
        CIJ_iso \
        CIJ_iso_av \
        CIJ_phasevels \
-       CIJ_plot/src \
+       CIJ_plot \
        CIJ_rot3 \
        CIJ_scale_to_iso \
        CIJ_thom \
