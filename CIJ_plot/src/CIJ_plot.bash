@@ -37,9 +37,9 @@ usage () {
 make_temp_file () {
 	[ $# -ne 1 ] && echo "`basename $0`: make_temp_file: Require name of temp file" &&
 		exit 2
-	local f=/tmp/CIJ_plot."$1"XXXXXX
-	mktemp /tmp/CIJ_plot."$1"XXXXXX ||
+	local f=$(mktemp /tmp/CIJ_plot."$1"XXXXXX) ||
 		{ echo "`basename $0`: make_temp_file: Can't create file $f"; exit 3; }
+	echo $f
 }
 
 WIDTH=5
@@ -169,6 +169,7 @@ fi
   F=`make_temp_file F`
 CPT=`make_temp_file cpt`
 GRD=`make_temp_file grd`
+trap "rm -f $P $S $F $CPT $GRD" EXIT
 
 echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels P > $P
 echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels S > $S
@@ -229,7 +230,6 @@ psxy -J -R -O -T >> "$FIG"
 
 [ -z "$batch" ] && gv "$FIG" 2>/dev/null
 
-/bin/rm $P $S $F $CPT $GRD
 [ -z $OUTPUT ] && /bin/rm -f "$FIG"
 
 exit 0
