@@ -10,8 +10,11 @@ all: CIJ_plot
 
 install: all
 	/bin/cp CIJ_plot.bash $(BINDIR)/CIJ_plot
+	/bin/cp CIJ_sphere.bash $(BINDIR)/CIJ_sphere
 
 CIJ_plot: CIJ_plot.bash CIJ_plot_cij2phasevels
+
+CIJ_sphere: CIJ_sphere.bash CIJ_plot_cij2phasevels
 
 CIJ_plot_cij2phasevels: CIJ_plot_cij2phasevels.o
 	$(FC) ${FCOPTS} -o CIJ_plot_cij2phasevels -L $(LIBDIR) ${LIBS} CIJ_plot_cij2phasevels.o
