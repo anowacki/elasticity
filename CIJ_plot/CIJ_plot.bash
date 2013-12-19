@@ -4,10 +4,9 @@
 # Usage:
 #		CIJ_plot [-lower] [-scale vpmin vpmax avsmin avsmax] [-r density] [.ecs file]
 
-##########################################
-# Set path to CIJ_plot_cij2phasevels here:
-BINDIR=~nowacki/Applications/Elasticity/CIJ_plot/src/
-##########################################
+###############################################
+# CIJ_plot_cij2phasevels must be in your PATH #
+###############################################
 
 usage () {
 	{
@@ -171,9 +170,9 @@ CPT=`make_temp_file cpt`
 GRD=`make_temp_file grd`
 trap "rm -f $P $S $F $CPT $GRD" EXIT
 
-echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels P > $P
-echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels S > $S
-echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels F > $F
+echo "$ecs $rho" | CIJ_plot_cij2phasevels P > $P
+echo "$ecs $rho" | CIJ_plot_cij2phasevels S > $S
+echo "$ecs $rho" | CIJ_plot_cij2phasevels F > $F
 
 min=`tail -n1 $P | awk '{printf("%0.2e", $2*0.99)}'`
 max=`tail -n1 $P | awk '{printf("%0.2e", $3*1.01)}'`

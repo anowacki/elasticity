@@ -17,7 +17,7 @@ program CIJ_Hudson_prog
    character(len=80) :: arg
    integer :: i,j,iostatus
    
-   if (iargc() /= 0 .and. iargc() /= 8) then
+   if (command_argument_count() /= 0 .and. command_argument_count() /= 8) then
       write(0,'(a)') 'Usage:  CIJ_Hudson vp vs rho a phi vpi vsi rhoi', &
                      '        or', &
                      '        CIJ_Hudson < [list of vp vs rho a phi vpi vsi rhoi]',&
@@ -31,16 +31,16 @@ program CIJ_Hudson_prog
    endif
    
 !  Called in one-shot mode
-   if (iargc() == 8) then
+   if (command_argument_count() == 8) then
       !  Get arguments
-      call getarg(1,arg);  read(arg,*) vp
-      call getarg(2,arg);  read(arg,*) vs
-      call getarg(3,arg);  read(arg,*) rho
-      call getarg(4,arg);  read(arg,*) a
-      call getarg(5,arg);  read(arg,*) phi
-      call getarg(6,arg);  read(arg,*) vpi
-      call getarg(7,arg);  read(arg,*) vsi
-      call getarg(8,arg);  read(arg,*) rhoi
+      call get_command_argument(1,arg);  read(arg,*) vp
+      call get_command_argument(2,arg);  read(arg,*) vs
+      call get_command_argument(3,arg);  read(arg,*) rho
+      call get_command_argument(4,arg);  read(arg,*) a
+      call get_command_argument(5,arg);  read(arg,*) phi
+      call get_command_argument(6,arg);  read(arg,*) vpi
+      call get_command_argument(7,arg);  read(arg,*) vsi
+      call get_command_argument(8,arg);  read(arg,*) rhoi
       
       !  Calculate effective elasticity tensor and write out
       call CIJ_hudson(vp,vs,rho,a,phi,vpi,vsi,rhoi,C,rho_eff)

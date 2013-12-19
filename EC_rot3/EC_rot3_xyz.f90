@@ -13,16 +13,16 @@ character(len=250) :: fname
 integer            :: kx,ky,kz
 
 !  Process command line options
-if (iargc() /= 4) then
+if (command_argument_count() /= 4) then
    write(0,*) 'Usage: EC_rot3 [alpha] [beta] [gamma] [.xyz file] > [output file]'
    stop
 endif
 
-call getarg(1,fname); read(fname,*) a
-call getarg(2,fname); read(fname,*) b
-call getarg(3,fname); read(fname,*) g
+call get_command_argument(1,fname); read(fname,*) a
+call get_command_argument(2,fname); read(fname,*) b
+call get_command_argument(3,fname); read(fname,*) g
 
-call getarg(4,fname)
+call get_command_argument(4,fname)
 
 !  Work out how many elastic constants we're dealing with
 necs = EC_grid_check_necs(fname)

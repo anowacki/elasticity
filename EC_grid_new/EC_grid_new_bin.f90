@@ -15,7 +15,7 @@ program EC_grid_new_bin
    integer :: i,j,k,ierr
    
 !  Check command line arguments
-   if (iargc() < 10 .or. iargc() > 11) then
+   if (command_argument_count() < 10 .or. command_argument_count() > 11) then
       write(*,'(a)') &
 'Usage: EC_grid_new_bin x1 x2 dx y1 y2 dy z1 z2 dz outfile (.ecs file | < 36 elastic constants)', &
 '       Specify elastic constants either from .ecs file, or from stdin.'
@@ -23,21 +23,21 @@ program EC_grid_new_bin
    endif
    
 !  Get command line args
-   call getarg(1,arg) ;  read(arg,*) ix1
-   call getarg(2,arg) ;  read(arg,*) ix2
-   call getarg(3,arg) ;  read(arg,*) idx
-   call getarg(4,arg) ;  read(arg,*) iy1
-   call getarg(5,arg) ;  read(arg,*) iy2
-   call getarg(6,arg) ;  read(arg,*) idy
-   call getarg(7,arg) ;  read(arg,*) iz1
-   call getarg(8,arg) ;  read(arg,*) iz2
-   call getarg(9,arg) ;  read(arg,*) idz
-   call getarg(10,outfile)
+   call get_command_argument(1,arg) ;  read(arg,*) ix1
+   call get_command_argument(2,arg) ;  read(arg,*) ix2
+   call get_command_argument(3,arg) ;  read(arg,*) idx
+   call get_command_argument(4,arg) ;  read(arg,*) iy1
+   call get_command_argument(5,arg) ;  read(arg,*) iy2
+   call get_command_argument(6,arg) ;  read(arg,*) idy
+   call get_command_argument(7,arg) ;  read(arg,*) iz1
+   call get_command_argument(8,arg) ;  read(arg,*) iz2
+   call get_command_argument(9,arg) ;  read(arg,*) idz
+   call get_command_argument(10,outfile)
    
 !  Get input ecs for grid.
 !  If 11 arguments, the input ecs are from a .ecs file
-   if (iargc() == 11) then
-      call getarg(11,ecsfile)
+   if (command_argument_count() == 11) then
+      call get_command_argument(11,ecsfile)
       call CIJ_load(ecsfile,C,rho)
 !  Otherwise, reading from stdin
    else

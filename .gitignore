@@ -13,7 +13,7 @@ CIJ_global_VTI/CIJ_global_VTI
 CIJ_iso_av/CIJ_iso_av
 CIJ_normalise/CIJ_normalise
 CIJ_phasevels/CIJ_phasevels
-CIJ_plot/src/CIJ_plot_cij2phasevels
+CIJ_plot/CIJ_plot_cij2phasevels
 CIJ_rot3/CIJ_rot3
 CIJ_scale_to_iso/CIJ_scale_to_iso
 CIJ_thom/CIJ_thom
@@ -28,7 +28,7 @@ EC_grid_inquire/EC_grid_inquire
 EC_grid_inquire/EC_grid_inquire_bin
 EC_grid_interp/EC_grid_interp_bin
 EC_grid_new/EC_grid_new_bin
-EC_grid_normalise_bin/bin/EC_grid_normalise_bin
+EC_grid_normalise_bin/EC_grid_normalise_bin
 EC_grid_rotate/EC_grid_rotate_bin
 EC_rot3/EC_rot3
 EC_rot3/EC_rot3_xyz

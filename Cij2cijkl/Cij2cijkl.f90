@@ -11,15 +11,15 @@ real(kind=8) :: Cij(6,6),cijkl(3,3,3,3),rho
 integer :: iostatus,i,j,k,l
 character(len=250) :: fname
 
-if (iargc() > 1) then
+if (command_argument_count() > 1) then
    write(0,'(a)') 'Usage:  Cij2cijkl [.ecs file] > [outfile]',&
                   '   or:  Cij2cijkl < [list of 36-column ecs]'
    stop
 endif
 
 ! If argument supplied, read .ecs file
-if (iargc() == 1) then
-   call getarg(1,fname)
+if (command_argument_count() == 1) then
+   call get_command_argument(1,fname)
    call CIJ_load(fname,Cij,rho)
    cijkl = Cij2cijkl(Cij)
    write(*,'(6e10.1)') Cij

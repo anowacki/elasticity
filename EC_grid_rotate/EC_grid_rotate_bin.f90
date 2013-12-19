@@ -29,7 +29,7 @@ use anisotropy_ajn
    
    
    ! Check arguments
-   if (iargc() /= 5) then
+   if (command_argument_count() /= 5) then
       write(0,'(a)') 'Usage: EC_grid_rotate_bin [infile] [a] [b] [c] [outfile]',&
                      '  a, b and c are respectively rotations about the x1, x2 and x3 axes,',&
                      '  applied clockwise when looking down the axis'
@@ -37,14 +37,14 @@ use anisotropy_ajn
    endif
    
    ! Get arguments
-   call getarg(1,infile)
-   call getarg(2,arg); read(arg,*,iostat=ios) a
+   call get_command_argument(1,infile)
+   call get_command_argument(2,arg); read(arg,*,iostat=ios) a
    call bad_angle_read
-   call getarg(3,arg); read(arg,*,iostat=ios) b
+   call get_command_argument(3,arg); read(arg,*,iostat=ios) b
    call bad_angle_read
-   call getarg(4,arg); read(arg,*,iostat=ios) c
+   call get_command_argument(4,arg); read(arg,*,iostat=ios) c
    call bad_angle_read
-   call getarg(5,outfile)
+   call get_command_argument(5,outfile)
    
    ! Determine the coordinate type of the grid
    call EC_grid_check_type_bin(infile,grid_type,quiet=quiet)

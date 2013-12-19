@@ -10,7 +10,7 @@ program CIJ_rotate_3
    integer :: iostatus,i,j
    
 !  Check input arguments
-   if (iargc() < 3 .or. iargc() > 4) then
+   if (command_argument_count() < 3 .or. command_argument_count() > 4) then
       write(0,'(a)') 'Usage: CIJ_rot3 [alpha] [beta] [gamma] (ecfile)', &
                      '  Rotations are applied in order, clockwise about a,b,c axes looking down axis.',&
                      '  If no .ecs file specified, then ECs are read from stdin, 36 constants per line.'
@@ -18,14 +18,14 @@ program CIJ_rotate_3
    endif
    
 !  Get input arguments
-   call getarg(1,arg) ;  read(arg,*) a
-   call getarg(2,arg) ;  read(arg,*) b
-   call getarg(3,arg) ;  read(arg,*) g
+   call get_command_argument(1,arg) ;  read(arg,*) a
+   call get_command_argument(2,arg) ;  read(arg,*) b
+   call get_command_argument(3,arg) ;  read(arg,*) g
    
 !  Get elastic constants
 !  if reading from .ecs file, just output in same units: assumes density normalised
-   if (iargc() == 4) then
-      call getarg(4,file)
+   if (command_argument_count() == 4) then
+      call get_command_argument(4,file)
       call CIJ_load(file,C,rho)
       call CIJ_rot3(C,a,b,g,CR)
       write(*,*) CR

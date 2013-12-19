@@ -14,23 +14,23 @@ integer :: dx,dy,dz
 integer :: ix,iy,iz
 integer,dimension(1) :: lx,ly,lz
 
-   if (iargc() /= 4 .and. iargc() /= 5) then
+   if (command_argument_count() /= 4 .and. command_argument_count() /= 5) then
       write(0,'(a)') 'Usage: EC_grid_interp_bin [dx] [dy] [dz] [infile] (outfile)',&
                      '     If no outfile supplied, infile is changed in place.'
       stop
    endif
    
 !  Process command line options
-   call getarg(1,arg) ;  read(arg,*) dx
-   call getarg(2,arg) ;  read(arg,*) dy
-   call getarg(3,arg) ;  read(arg,*) dz
-   call getarg(4,infile)
+   call get_command_argument(1,arg) ;  read(arg,*) dx
+   call get_command_argument(2,arg) ;  read(arg,*) dy
+   call get_command_argument(3,arg) ;  read(arg,*) dz
+   call get_command_argument(4,infile)
    
 !  Default to writing over the old file
    outfile = infile
    
 !  If requested, write to a new file instead
-   if (iargc() == 5) call getarg(5,outfile)
+   if (command_argument_count() == 5) call get_command_argument(5,outfile)
    
 !  Load old grid file
    call EC_grid_load_bin(infile,old,quiet=.true.)

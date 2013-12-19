@@ -29,13 +29,13 @@ interface
 end interface
 
 !  Check for correct invocation and get options
-if (iargc() /= 1) then
+if (command_argument_count() /= 1) then
    write(0,'(a)') 'Usage: CIJ_scale_to_iso [vs] < [list of 36 ecs + density]'
    stop
 endif
 
 ! Get input
-call getarg(1,arg);  read(arg,*) Vs
+call get_command_argument(1,arg);  read(arg,*) Vs
 
 !  Sample a hemisphere evenly at 1 degree intervals
 call sphere_sample_local(lon,lat)

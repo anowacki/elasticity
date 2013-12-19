@@ -14,10 +14,10 @@ install: EC_grid_asc2bin EC_grid_bin2asc
 	/bin/cp EC_grid_bin2asc $(BINDIR)/EC_grid_bin2asc
 
 EC_grid_asc2bin: EC_grid_asc2bin.o
-	$(FC) ${FFLAGS} -o EC_grid_asc2bin -L $(LIBDIR) ${LIBS} EC_grid_asc2bin.o
+	$(FC) ${FCOPTS} -o EC_grid_asc2bin -L $(LIBDIR) ${LIBS} EC_grid_asc2bin.o
 
 EC_grid_bin2asc: EC_grid_bin2asc.o
-	$(FC) ${FFLAGS} -o EC_grid_bin2asc -L $(LIBDIR) ${LIBS} EC_grid_bin2asc.o
+	$(FC) ${FCOPTS} -o EC_grid_bin2asc -L $(LIBDIR) ${LIBS} EC_grid_bin2asc.o
 
 %.o: %.f90
 	$(FC) ${FCOPTS} -c -J $(MODDIR) $*.f90

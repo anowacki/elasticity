@@ -20,12 +20,12 @@ program inquire
    character(len=250) :: fname
    integer :: nver
    
-   if (iargc() /= 1) then
+   if (command_argument_count() /= 1) then
       write(0,'(a)') 'Usage: EC_grid_inquire_bin [fname]'
       stop
    endif
    
-   call getarg(1,fname)
+   call get_command_argument(1,fname)
    
    open(10,file=fname,form='unformatted')
    

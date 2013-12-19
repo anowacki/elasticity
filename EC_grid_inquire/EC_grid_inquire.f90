@@ -8,12 +8,12 @@ program inquire
    type(ECgrid) :: grid
    character(len=250) :: fname
    
-   if (iargc() /= 1) then
+   if (command_argument_count() /= 1) then
       write(0,'(a)') 'Usage: EC_grid_inquire [fname]'
       stop
    endif
    
-   call getarg(1,fname)
+   call get_command_argument(1,fname)
    
    write(*,'(a)')   '=================================='
    write(*,'(a,a)') 'EC_grid_inquire: file ',trim(fname)

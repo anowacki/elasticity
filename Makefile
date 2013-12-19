@@ -15,7 +15,7 @@ DIRS = Au \
        CIJ_iso \
        CIJ_iso_av \
        CIJ_phasevels \
-       CIJ_plot/src \
+       CIJ_plot \
        CIJ_rot3 \
        CIJ_scale_to_iso \
        CIJ_thom \
@@ -27,7 +27,7 @@ DIRS = Au \
        EC_grid_inquire \
        EC_grid_interp \
        EC_grid_new \
-       EC_grid_normalise_bin/src \
+       EC_grid_normalise_bin \
        EC_grid_plot_bin \
        EC_rot3 \
        GPa2Pa \

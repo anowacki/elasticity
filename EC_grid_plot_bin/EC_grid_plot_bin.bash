@@ -29,7 +29,12 @@ den=1000
 
 # Defaults: plot Au to temporary location
 Au=1
-FIG=/tmp/plot_model_Au.ps
+FIG=`mktemp /tmp/plot_model_Au.psXXXXXXXXXX`
+ AU=`mktemp /tmp/plot_model_Au.AuXXXXXXXXXX`
+ XY=`mktemp /tmp/plot_model_Au.xyXXXXXXXXXX`
+CPT=`mktemp /tmp/plot_model_Au.cptXXXXXXXXXX`
+GRD=`mktemp /tmp/plot_model_Au.grdXXXXXXXXXX`
+trap "rm -f \"$FIG\" \"$AU\" \"$XY\" \"$CPT\" \"$GRD\"" EXIT
 
 if [ $# -eq 0 ]; then usage; fi
 
@@ -95,9 +100,9 @@ while [ -n "$1" ]; do
 			title="$2"
 			shift 2 ;;
 		-o)
-			FIG="$2"
-			if [ ! -w `dirname "$FIG"` ]; then
-				echo "`basename $0`: Error: output file $FIG not writable." > /dev/stderr
+			OFIG="$2"
+			if [ ! -w `dirname "$OFIG"` ]; then
+				echo "`basename $0`: Error: output file \"$OFIG\" not writable." > /dev/stderr
 				exit 5
 			fi
 			shift 2
@@ -160,30 +165,30 @@ height=`echo $dims | awk '{print $2}'`
 # Simultaneously create x-y values for plotting
 if [ -n "$Au" ]; then
 	EC_grid_bin_dump $file $necs |\
-		awk -v x=$x -v x1=${x1} -v x2=${x2} '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
-		$1=""; $2=""; $3=""; print $0}' | Au $necs | grep -v "redundant" > /tmp/plot_model_Au.Au
+		awk -v x=$x -v x1=${x1} -v x2=${x2} '$'$slice'==x{print $'${x1}',$'${x2}' > "'"$XY"'"; \
+		$1=""; $2=""; $3=""; print $0}' | Au $necs | grep -v "redundant" > "$AU"
 elif [ -n "$p" ]; then  # Vp with dummy density
 	EC_grid_bin_dump $file 36 |\
-		awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
+		awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "'"$XY"'"; \
 			$1=""; $2=""; $3=""; print $0,den}' | CIJ_iso_av |\
-			awk '{print sqrt($1)/1000}'  > /tmp/plot_model_Au.Au
+			awk '{print sqrt($1)/1000}'  > "$AU"
 elif [ -n "$s" ]; then # Vs with dummy density
 	EC_grid_bin_dump $file 36 |\
-		awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
+		awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "'"$XY"'"; \
 			$1=""; $2=""; $3=""; print $0,den}' | CIJ_iso_av |\
-		awk '{print sqrt($22)/1000}' > /tmp/plot_model_Au.Au
+		awk '{print sqrt($22)/1000}' > "$AU"
 fi
 
 # Convert to percentage deviation if plotting relative velocities
 if [ -n "$dv" ]; then
-	meanAu=`awk '$1!="NaN" && $1 >= 0 && $2!="redundant" {n+=1; sum+=$1} END{print sum/n}' /tmp/plot_model_Au.Au`
-	awk -v mean=$meanAu '$1!="NaN"{print 100*($1-mean)/mean}$1=="NaN"{print}' /tmp/plot_model_Au.Au > /tmp/plot_model_Au.Au.temp
-	mv /tmp/plot_model_Au.Au{.temp,}
+	meanAu=`awk '$1!="NaN" && $1 >= 0 && $2!="redundant" {n+=1; sum+=$1} END{print sum/n}' "$AU"`
+	awk -v mean=$meanAu '$1!="NaN"{print 100*($1-mean)/mean}$1=="NaN"{print}' "$AU" > "${AU}.temp"
+	mv "${AU}.temp" "$AU"
 fi
 
 # EC_grid_bin_dump $file 36 |\
-# 	awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "/tmp/plot_model_Au.xy"; \
-# 		$1=""; $2=""; $3=""; print $0,den}' > /tmp/temp.Au
+# 	awk -v x=$x -v x1=${x1} -v x2=${x2} -v den=$den '$'$slice'==x{print $'${x1}',$'${x2}' > "'"$XY"'"; \
+# 		$1=""; $2=""; $3=""; print $0,den}' > "$AU"
 
 # Calculate minimum/maxmimum Au/Vp/Vs; NaNs mean Au=0.  Stop if no anisotropy present.
 if [ -z "$scale" ]; then
@@ -195,7 +200,7 @@ if [ -z "$scale" ]; then
 				$1=="NaN" {min=0} \
 				$1<0 || $1=="redundant" {l=1; min=0} \
 				END{if (l==1) print "Warning: Some constants not as expected: some some nodes contain liquid?" > "/dev/stderr" ;\
-					print min,max}' /tmp/plot_model_Au.Au`
+					print min,max}' "$AU"`
 		minAu=`echo $minmax | awk '{printf("%5.3e",$1)}'`
 		maxAu=`echo $minmax | awk '{printf("%5.3e",$2)}'`
 	else
@@ -205,7 +210,7 @@ if [ -z "$scale" ]; then
 				abs($1)>max && $1!="NaN" {max=abs($1)}
 				$1=="redundant" {l=1}
 				END {if (l==1) print "Warning: Some constants not as expected: some nodes contain liquid?" > "/dev/stderr"
-					print max}' /tmp/plot_model_Au.Au`
+					print max}' "$AU"`
 		maxAu=`echo $minmax | awk '{printf("%5.1e",$1)}'`
 		minAu=-$maxAu
 	fi
@@ -235,20 +240,20 @@ if [ -n "$Au" ]; then C="hot"; [ -z "$cpt" ] && flip=1; fi
 [ -n "$cpt" ] && C="$cpt"
 [ -n "$flip" ] && I=-I
 dAu=`echo $minAu $maxAu | awk '{printf("%0.3e",($2-$1)/3)}'`
-makecpt -C$C $I -T$minAu/$maxAu/$dAu -D -Z > /tmp/plot_model_Au.cpt
+makecpt -C$C $I -T$minAu/$maxAu/$dAu -D -Z > "$CPT"
 
 # Set title if not done on command line
 [ -z "$title" ] && title="@%2%x@%%@-$slice@- = $x"
 
 # Create the plot
 gmtset PAPER_MEDIA a4+
-paste /tmp/plot_model_Au.xy /tmp/plot_model_Au.Au |\
-	xyz2grd -R${minx1}/${maxx1}/${minx2}/${maxx2} -I${dx1}/${dx2} -G/tmp/plot_model_Au.grd
+paste "$XY" "$AU" |\
+	xyz2grd -R${minx1}/${maxx1}/${minx2}/${maxx2} -I${dx1}/${dx2} -G"$GRD"
 
 gmtset HEADER_OFFSET 14p
-grdimage /tmp/plot_model_Au.grd -R${minx1}/${maxx1}/${minx2}/${maxx2} \
-	-JX${width}c/${height}c -C/tmp/plot_model_Au.cpt -P \
-	-Ba1000:"@%2%x@%%@-${x1}":/a100:"@%2%x@%%@-${x2}"::."$title":NseW -K > $FIG
+grdimage "$GRD" -R${minx1}/${maxx1}/${minx2}/${maxx2} \
+	-JX${width}c/${height}c -C"$CPT" -P \
+	-Ba1000:"@%2%x@%%@-${x1}":/a100:"@%2%x@%%@-${x2}"::."$title":NseW -K > "$FIG"
 
 # Add the scale
 [ -n "$Au" ] && label='@%2%A@+U@+'
@@ -256,11 +261,15 @@ grdimage /tmp/plot_model_Au.grd -R${minx1}/${maxx1}/${minx2}/${maxx2} \
 [ -n "$s" -a -z "$dv" ]  && label='@%2%V@%%@-S@- / km s@+-1'
 [ -n "$p" -a -n "$dv" ]  && label="@~d@~@%2%V@%%@-P@- / %"
 [ -n "$s" -a -n "$dv" ]  && label="@~d@~@%2%V@%%@-S@- / %"
-psscale -D`echo $width/2 | bc -l`c/-1c/8c/0.5ch -A -C/tmp/plot_model_Au.cpt -O -S -B/:"$label": \
-	>> $FIG
+psscale -D`echo $width/2 | bc -l`c/-1c/8c/0.5ch -A -C"$CPT" -O -S -B/:"$label": \
+	>> "$FIG"
 
 if [ -z "$quiet" ]; then  # Don't bring up figure in batch mode
-	gv --scale=2 $FIG 2>/dev/null
+	gv --scale=2 "$FIG" 2>/dev/null
 fi
+
+# Save figure to desired location
+[ -n "$OFIG" ] && cp "$FIG" "$OFIG"
+
 
 exit 0

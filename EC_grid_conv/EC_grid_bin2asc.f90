@@ -14,22 +14,22 @@ program EC_grid_bin2asc
    logical :: quiet=.false.
    
 !  Command line parameters
-   if (iargc() /= 1 .and. iargc() /= 2 .and. iargc() /= 3) then
+   if (command_argument_count() /= 1 .and. command_argument_count() /= 2 .and. command_argument_count() /= 3) then
       write(0,'(a)') 'Usage: EC_grid_bin2asc (-quiet) [infile] (outfile)',&
                      '       if outfile == ''-'', ECs are sent to stdout'
       stop
    endif
    
-   call getarg(1,infile)
+   call get_command_argument(1,infile)
    if (infile(1:2) == '-q') then
       quiet = .true.
-      call getarg(2,infile)
+      call get_command_argument(2,infile)
    endif
    
-   if (quiet .and. iargc() == 3) then   ! Have specified -q, infile and outfile
-      call getarg(3,outfile)
-   else if (.not.quiet .and. iargc() == 2) then  !  Have specified infile and outfile
-      call getarg(2,outfile)
+   if (quiet .and. command_argument_count() == 3) then   ! Have specified -q, infile and outfile
+      call get_command_argument(3,outfile)
+   else if (.not.quiet .and. command_argument_count() == 2) then  !  Have specified infile and outfile
+      call get_command_argument(2,outfile)
    else                                 ! Haven't specified outfile
       outfile = trim(infile) // '.asc'  ! Add .asc extension if no outfile specified
    endif
