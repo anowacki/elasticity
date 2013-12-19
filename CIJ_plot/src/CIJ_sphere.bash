@@ -190,7 +190,7 @@ GRD=`make_temp_file grd`
 trap "rm -f $P $S $F $CPT $GRD" EXIT
 
 # Start of postscript
-psxy -J${PROJ} -Rd -K -T -P > $FIG
+psxy -J${PROJ} -Rd -K -T -P 2>&1 > $FIG | grep -v "Warning"
 
 ########################################
 # P wave velocity plot
@@ -241,7 +241,10 @@ else
 
 	# S fast orientation plot
 	awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
-		psxy -J -R -SVB0.08c/0/0 -Gblack -W0.005c,white -O -K >> "$FIG"
+		psxy -J -R -SVB0.08c/0/0 -Gblack -W0.005c,white -O -K 2>&1 >> "$FIG" |
+		# Don't output warnings about not being able to plot the whole world
+		# when we're looking at the poles
+		grep -v "Warning"
 	
 fi
 
@@ -262,22 +265,22 @@ if [ -z "$noaxes" ]; then
 			if (abs(azi) >  90) print "  0 180 10 0 0 CB -@%2%x@%%@-1"
 		}'`
 	echo "$dirs" |
-	psxy -J -R -O -K -Ss0.2c -Gwhite -W0.5p -N >> "$FIG"
+	psxy -J -R -O -K -Ss0.2c -Gwhite -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
 	echo "$dirs" |
-	pstext -J -R -O -K -D0/0.25c -Wwhite -N >> "$FIG"
+	pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
 fi
 
 ####################################
 # Additional directional labels
 for ((i=1; i<=nd; i++)); do
 	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} |
-		psxy -J -R -O -K -Sc0.3c -Gyellow -W0.5p -N >> "$FIG"
-	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} 11 0 0 CB "${dlabel[i]}"|
-		pstext -J -R -O -K -D0/0.25c -Wwhite -N >> "$FIG"
+		psxy -J -R -O -K -Sc0.3c -Gyellow -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
+	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} 11 0 0 CB "${dlabel[i]}" |
+		pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
 done
 
 # Finalise Postscript
-psxy -J -R -O -T >> "$FIG"
+psxy -J -R -O -T 2>&1 >> "$FIG" | grep -v "Warning"
 
 [ -z "$batch" ] && gv "$FIG" 2>/dev/null
 
