@@ -3,10 +3,9 @@
 # Shell script to plot phase velocity surfaces for elastic constants on a sphere
 # with the viewpoint of one's choosing
 
-##########################################
-# Set path to CIJ_plot_cij2phasevels here:
-BINDIR=~nowacki/Applications/Elasticity/CIJ_plot/src
-##########################################
+###############################################
+# CIJ_plot_cij2phasevels must be in your PATH #
+###############################################
 
 usage () {
 	{
@@ -196,7 +195,7 @@ psxy -J${PROJ} -Rd -K -T -P 2>&1 > $FIG | grep -v "Warning"
 # P wave velocity plot
 if [ $p ]; then
 
-	echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels PS > $P
+	echo "$ecs $rho" | CIJ_plot_cij2phasevels PS > $P
 
 	min=`tail -n1 $P | awk '{printf("%0.2e", $2*0.99)}'`
 	max=`tail -n1 $P | awk '{printf("%0.2e", $3*1.01)}'`
@@ -219,8 +218,8 @@ if [ $p ]; then
 # S wave anisotropy plot
 else
 	
-	echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels SS > $S
-	echo "$ecs $rho" | ${BINDIR}/CIJ_plot_cij2phasevels FS > $F
+	echo "$ecs $rho" | CIJ_plot_cij2phasevels SS > $S
+	echo "$ecs $rho" | CIJ_plot_cij2phasevels FS > $F
 	min=`tail -n1 $S | awk '{printf("%0.2e", $2*0.95)}'`
 	max=`tail -n1 $S | awk '{printf("%0.2e", $3*1.05)}'`
 	if [ $scale -eq 1 ]; then
