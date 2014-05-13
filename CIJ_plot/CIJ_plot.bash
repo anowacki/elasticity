@@ -186,6 +186,7 @@ else                     # Automatic scale
 fi
 awk 'NF==3' $P | surface -G$GRD -Rd -I1
 
+gmtset PAPER_MEDIA a4+
 grdimage $GRD -J${PROJ}0/0/${WIDTH}c -R-90/90/-90/90 -C$CPT -B90 -K -P > "$FIG" 2>/dev/null
 psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
 	-O -K >> "$FIG"
@@ -197,7 +198,7 @@ echo "0 0 10 0 0 BL $AVp %" | pstext -J -R -O -K -N -D-`echo 0.5*$WIDTH | bc -l`
 
 #######################################
 # S wave velocity and fast shear wave plot
-min=`tail -n1 $S | awk '{printf("%0.2e", $2*0.95)}'`
+min=0 #`tail -n1 $S | awk '{printf("%0.2e", $2*0.95)}'`
 max=`tail -n1 $S | awk '{printf("%0.2e", $3*1.05)}'`
 if [ $scale -eq 1 ]; then
 	d=`echo $avs2 $avs1 $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'` #`echo "($max-$min)/10" | bc -l`
