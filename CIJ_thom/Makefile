@@ -5,7 +5,7 @@ LIBDIR = ~nowacki/Applications/modules/lib
 MODDIR = ~nowacki/Applications/modules/mods
 LIBS = -lanisotropy_ajn
 
-all: CIJ_thom CIJ_thom_list
+all: CIJ_thom CIJ_thom_list CIJ_thom_st
 
 install: CIJ_thom CIJ_thom_list
 	/bin/cp CIJ_thom CIJ_thom_list $(BINDIR)/
@@ -15,6 +15,9 @@ CIJ_thom: CIJ_thom.o
 
 CIJ_thom_list: CIJ_thom_list.o
 	$(FC) ${FCOPTS} -o CIJ_thom_list -L $(LIBDIR) ${LIBS} CIJ_thom_list.o
+
+CIJ_thom_st: CIJ_thom_st.o
+	$(FC) ${FCOPTS} -o CIJ_thom_st -L $(LIBDIR) ${LIBS} CIJ_thom_st.o
 
 %.o: %.f90
 	$(FC) ${FCOPTS} -c -J $(MODDIR) $*.f90

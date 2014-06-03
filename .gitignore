@@ -19,6 +19,7 @@ CIJ_rot_euler/CIJ_rot_euler
 CIJ_scale_to_iso/CIJ_scale_to_iso
 CIJ_thom/CIJ_thom
 CIJ_thom/CIJ_thom_list
+CIJ_thom/CIJ_thom_st
 Cij2cijkl/Cij2cijkl
 EC_grid_21to36/EC_grid_21to36
 EC_grid_bin_dump/EC_grid_bin_dump
