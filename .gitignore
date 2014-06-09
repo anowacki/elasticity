@@ -17,6 +17,7 @@ CIJ_plot/CIJ_plot_cij2phasevels
 CIJ_rot3/CIJ_rot3
 CIJ_rot_euler/CIJ_rot_euler
 CIJ_scale_to_iso/CIJ_scale_to_iso
+CIJ_stable/CIJ_stable
 CIJ_thom/CIJ_thom
 CIJ_thom/CIJ_thom_list
 CIJ_thom/CIJ_thom_st
