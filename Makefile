@@ -19,6 +19,7 @@ DIRS = Au \
        CIJ_rot3 \
        CIJ_rot_euler \
        CIJ_scale_to_iso \
+       CIJ_stable \
        CIJ_thom \
        Cij2cijkl \
        EC_grid_21to36 \
@@ -51,4 +52,4 @@ allclean:
         $(MAKE) -C $$d clean; \
         echo; \
      done)
-	
+
