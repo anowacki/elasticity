@@ -6,9 +6,6 @@ program phasevels
 !
 !  Relies on CIJ_phasevels in module EmatrixUtils, by James Wookey.  See the source
 !  for information on the coordinate system and angle conventions.
-!
-!  Usage:
-!      CIJ_phasevels [inc] [azi] (ecfile)
 
    use EmatrixUtils
    use anisotropy_ajn
@@ -17,43 +14,104 @@ program phasevels
    
    real(8) :: ecs(6,6),inc,azi,rho,pol,avs,vp,vs1,vs2,vsmean
    character(len=250) :: file,arg
-   integer :: iostatus
+   character(len=1000) :: line
+   integer :: iostatus = 0, narg
    
-   if (command_argument_count() < 3 .or. command_argument_count() > 4) then
+   narg = command_argument_count()
+   if (narg /= 1 .and. narg /= 3 .and. narg /= 4) then
       write(0,'(a)') 'Usage: CIJ_phasevels [inc] [azi] [rho] (ecfile)',&
+                     'or:    CIJ_phasevels [ecfile] < (inc,azi on stdin)',&
                      '   Inc is angle from 1-2 plane towards 3',&
                      '   Azi is angle from 1 towards 2 in 1-2 plane',&
                      '   If no input file provided, ecs (density-normalised) are read from stdin, c11, c12, etc. (36)'
       stop
    endif
    
-   call get_command_argument(1,arg) ;  read(arg,*) inc
-   call get_command_argument(2,arg) ;  read(arg,*) azi
-   call get_command_argument(3,arg) ;  read(arg,*) rho
+   ! Looping over sets of orientations on stdin
+   if (narg == 1) then
+      call get_command_argument(1,file)
+      call CIJ_load(file,ecs,rho)
+      call write_header_line
+      iostatus = 0
+      do while (iostatus == 0)
+         read(*,'(a)',iostat=iostatus) arg
+         if (iostatus < 0) exit
+         if (iostatus > 0) then
+            write(0,'(a)') 'CIJ_phasevels: Error: Problem reading line from stdin'
+            stop
+         endif
+         read(arg,*,iostat=iostatus) inc,azi
+         azi = modulo(azi,360._8)
+         if (iostatus /= 0) then
+            write(0,'(a)') &
+               'CIJ_phasevels: Error: Problem reading inc,azi from line "' &
+                  //trim(arg)//'"'
+            stop
+         endif
+         call CIJ_phasevels(ecs/rho,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
+         call write_output
+      enddo
+
+   else
+      call get_command_argument(1,arg) ;  read(arg,*) inc
+      call get_command_argument(2,arg) ;  read(arg,*) azi
+      call get_command_argument(3,arg) ;  read(arg,*) rho
 
 !  Get elastic constants
 !  If reading from an .ecs file, MUST NOT BE DENSITY-NORMALISED!!!
-   if (command_argument_count() == 4) then  ! One set from input file
-      call get_command_argument(4,file)
-      call CIJ_load(file,ecs,rho)
+      if (narg == 4) then  ! One set from input file
+         call get_command_argument(4,file)
+         call CIJ_load(file,ecs,rho)
 !  Check whether we're in GPa, not Pa
-      if (ecs(1,1) < 5000.) ecs = ecs * 1.e9
-      call CIJ_phasevels(ecs/rho,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
-!      write(*,'(6e10.1)') ecs
-      write(*,'(a)') '   pol      avs        vp       vs1       vs2'
-      write(*,'(f6.1,f9.4,3f10.4)') pol,avs,vp,vs1,vs2
-!  If reading ecs from stdin, MUST BE DENSITY-NORMALISED!!
-   else if (command_argument_count() == 3) then  ! Many sets from stdin
-      write(*,'(a)') '   pol      avs        vp       vs1       vs2'
-      do while (iostatus == 0)
-         read(*,*,iostat=iostatus) ecs
-         if (iostatus /= 0) exit
-!         if (iostatus > 0) stop 'Some problem reading file.  36 ecs must be present on each line.'
          if (ecs(1,1) < 5000.) ecs = ecs * 1.e9
+         call CIJ_phasevels(ecs/rho,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
+         call write_header_line
+         call write_output
+
+!  If reading ecs from stdin, MUST BE DENSITY-NORMALISED!!
+      else if (narg == 3) then  ! Many sets from stdin
+         call write_header_line
+         do while (iostatus == 0)
+            call read_ecs_stdin
+            if (iostatus < 0) exit
 !  Check whether we're in GPa, not Pa
-         call CIJ_phasevels(ecs,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
-         write(*,'(f6.1,f9.4,3f10.4)') pol,avs,vp,vs1,vs2
-      enddo
+            if (ecs(1,1) < 5000.) ecs = ecs * 1.e9
+            call CIJ_phasevels(ecs,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
+            call write_output
+         enddo
+      endif
    endif
+
+contains
+   subroutine write_header_line
+      if (narg == 1) then
+         write(*,'(a)') '   pol      avs        vp       vs1       vs2    inc    azi'
+      else
+         write(*,'(a)') '   pol      avs        vp       vs1       vs2'
+      endif
+   end subroutine write_header_line
+
+   subroutine read_ecs_stdin
+      read(*,'(a)',iostat=iostatus) line
+      if (iostatus < 0) return
+      if (iostatus > 0) then
+         write(0,'(a)') 'CIJ_phasevels: Error: Problem reading line from stdin'
+         stop
+      endif
+      read(line,*,iostat=iostatus) ecs
+      if (iostatus /= 0) then
+         write(0,'(a)') 'CIJ_phasevels: Error: Problem reading 36 ecs from line "' &
+            //trim(line)//'"'
+         stop
+      endif
+   end subroutine read_ecs_stdin
+
+   subroutine write_output
+      if (narg == 1) then
+         write(*,'(f6.1,f9.4,3f10.4,2(f7.1))') pol,avs,vp,vs1,vs2,inc,azi
+      else
+         write(*,'(f6.1,f9.4,3f10.4)') pol,avs,vp,vs1,vs2
+      endif
+   end subroutine write_output
 
 end program phasevels
