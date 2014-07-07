@@ -1,8 +1,8 @@
 FC = gfortran
 FCOPTS = 
-BINDIR = ~nowacki/Applications/bin
-LIBDIR = ~nowacki/Applications/modules/lib
-MODDIR = ~nowacki/Applications/modules/mods
+BINDIR = ~/Applications/bin
+LIBDIR = ~/Applications/modules/lib
+MODDIR = ~/Applications/modules/mods
 LIBS = -lanisotropy_ajn
 
 all: CIJ_thom CIJ_thom_list CIJ_thom_st

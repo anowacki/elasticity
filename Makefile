@@ -1,5 +1,12 @@
 # Makefile for all elasticity programs
 
+# Global directories for .mod files and libraries used in these programs
+MODDIR = ~/Applications/modules/mods
+LIBDIR = ~/Applications/modules/lib
+
+# Global installation directory
+BINDIR = ~/Applications/bin
+
 # Directories containing Makefiles
 DIRS = Au \
        CIJ_21to36 \
@@ -42,7 +49,7 @@ DIRS = Au \
 all:
 	(for d in ${DIRS}; do \
         echo "=== Making in directory $$d ==="; \
-        $(MAKE) -C $$d install; \
+        $(MAKE) -C $$d install MODDIR=$(MODDIR) LIBDIR=$(LIBDIR) BINDIR=$(BINDIR); \
 		echo; \
      done)
 

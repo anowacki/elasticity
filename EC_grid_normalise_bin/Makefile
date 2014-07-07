@@ -1,8 +1,8 @@
 FC = gfortran
 FCOPTS = -O3 -fbounds-check
-BINDIR = ~nowacki/Applications/bin
-MODDIR = ~nowacki/Applications/modules/mods
-LIBDIR = ~nowacki/Applications/modules/lib
+BINDIR = ~/Applications/bin
+MODDIR = ~/Applications/modules/mods
+LIBDIR = ~/Applications/modules/lib
 LIBS = -lEC_grid
 
 default: EC_grid_normalise_bin

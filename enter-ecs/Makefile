@@ -1,4 +1,4 @@
-BINDIR = ~nowacki/Applications/bin
+BINDIR = ~/Applications/bin
 
 SCRIPTS = calc-den enter-ecs
 

@@ -1,4 +1,4 @@
-BINDIR = ~nowacki/Applications/bin
+BINDIR = ~/Applications/bin
 
 all: EC_grid_plot_bin.bash
 

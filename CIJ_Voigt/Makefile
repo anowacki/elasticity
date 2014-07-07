@@ -1,8 +1,8 @@
 FC = gfortran
 FCOPTS = -O2 -g -ggdb -fbounds-check -frange-check
-BINDIR = ~nowacki/Applications/bin
-LIBDIR = ~nowacki/Applications/modules/lib
-MODDIR = ~nowacki/Applications/modules/mods
+BINDIR = ~/Applications/bin
+LIBDIR = ~/Applications/modules/lib
+MODDIR = ~/Applications/modules/mods
 LIBS = -lanisotropy_ajn -lget_args
 
 all: CIJ_Voigt

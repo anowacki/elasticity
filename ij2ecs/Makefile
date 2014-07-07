@@ -1,4 +1,4 @@
-BINDIR = ~nowacki/Applications/bin
+BINDIR = ~/Applications/bin
 
 all: ij2ecs
 

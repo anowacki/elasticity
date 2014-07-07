@@ -1,8 +1,8 @@
 FC = gfortran
 FCOPTS = -O3
-BINDIR = ~nowacki/Applications/bin
-LIBDIR = ~nowacki/Applications/modules/lib
-MODDIR = ~nowacki/Applications/modules/mods
+BINDIR = ~/Applications/bin
+LIBDIR = ~/Applications/modules/lib
+MODDIR = ~/Applications/modules/mods
 LIBS = -lanisotropy_ajn -lspherical_geometry -lEmatrixUtils
 MODS = anisotropy_ajn.o spherical_geometry.o EmatrixUtils.o
 
