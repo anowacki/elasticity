@@ -14,7 +14,7 @@ usage () {
 	echo "Options:"
 	echo "  -P|-S                   : Show P wave velocity or S wave anisotropy sphere. (S)"
 	echo "  -a [azi inc]            : Set viepoint: azimuth is in CIJ_phasevels"
-	echo "                            convention (az x1->x2; inc x1x2->x3) (45 30)"
+	echo "                            convention (az x1->-x2; inc x1x2->x3) (45 30)"
 	echo "  -b(atch)                : Don't display plot for batch plotting. (display)"
 	echo "  -c(pt) [colour palette] : Choose alternative colour palette."
 	echo "                            Must be inbuilt to GMT. (wysiwyg)"
@@ -258,8 +258,8 @@ if [ -z "$noaxes" ]; then
 			if (inc <  0) print "  0 -90 10 0 0 CB -@%2%x@%%@-3"
 			
 			azi = (azi+3600+180)%360 - 180  # In range -180 to 180
-			if (azi >  0) print " 90   0 10 0 0 CB -@%2%x@%%@-2"
-			if (azi <= 0) print "-90   0 10 0 0 CB  @%2%x@%%@-2"
+			if (azi >= 0) print " 90   0 10 0 0 CB  @%2%x@%%@-2"
+			if (azi <  0) print "-90   0 10 0 0 CB -@%2%x@%%@-2"
 			if (abs(azi) <= 90) print "  0   0 10 0 0 CB  @%2%x@%%@-1"
 			if (abs(azi) >  90) print "  0 180 10 0 0 CB -@%2%x@%%@-1"
 		}'`
