@@ -64,7 +64,7 @@ case $symm in
 	# Tetragonal (7) 4, -4, 4/m
 	tet7*)     ijlist="11 33 12 13 16 44 66" ;;
 	# Orthorhombic
-	[Oo]*)     ijlist="11 22 33 12 13 44 55 66" ;;
+	[Oo]*)     ijlist="11 22 33 12 13 23 44 55 66" ;;
 	# Monoclinic
 	[Mm]*)     ijlist="11 22 33 12 13 15 23 25 35 44 46 55 66" ;;
 	# Triclinic
