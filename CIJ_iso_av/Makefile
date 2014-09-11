@@ -3,7 +3,7 @@ FCOPTS = -g -fbounds-check
 BINDIR = ~/Applications/bin
 LIBDIR = ~/Applications/modules/lib
 MODDIR = ~/Applications/modules/mods
-LIBS = -lanisotropy_ajn -lEmatrixUtils -lspherical_geometry
+LIBS = -lanisotropy_ajn -lspherical_geometry
 
 all: CIJ_iso_av
 
