@@ -3,7 +3,7 @@ FCOPTS =
 BINDIR = ~/Applications/bin
 LIBDIR = ~/Applications/modules/lib
 MODDIR = ~/Applications/modules/mods
-LIBS = -lanisotropy_ajn -lEmatrixUtils
+LIBS = -lanisotropy_ajn
 
 all: CIJ_phasevels
 

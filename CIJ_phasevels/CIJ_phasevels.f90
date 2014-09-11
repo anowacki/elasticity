@@ -4,10 +4,9 @@ program phasevels
 !  Read in ecs from stdin or from a file, and output information for a given
 !  inclination and azimuth
 !
-!  Relies on CIJ_phasevels in module EmatrixUtils, by James Wookey.  See the source
+!  Relies on CIJ_phase_vels in module anisotropy_ajn.  See the source
 !  for information on the coordinate system and angle conventions.
 
-   use EmatrixUtils
    use anisotropy_ajn
 
    implicit none
@@ -48,7 +47,7 @@ program phasevels
                   //trim(arg)//'"'
             stop
          endif
-         call CIJ_phasevels(ecs/rho,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
+         call CIJ_phase_vels(ecs/rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
          call write_output
       enddo
 
@@ -64,7 +63,7 @@ program phasevels
          call CIJ_load(file,ecs,rho)
 !  Check whether we're in GPa, not Pa
          if (ecs(1,1) < 5000.) ecs = ecs * 1.e9
-         call CIJ_phasevels(ecs/rho,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
+         call CIJ_phase_vels(ecs/rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
          call write_header_line
          call write_output
 
@@ -76,7 +75,7 @@ program phasevels
             if (iostatus < 0) exit
 !  Check whether we're in GPa, not Pa
             if (ecs(1,1) < 5000.) ecs = ecs * 1.e9
-            call CIJ_phasevels(ecs,rho,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
+            call CIJ_phase_vels(ecs,azi,inc,pol=pol,avs=avs,vp=vp,vs1=vs1,vs2=vs2)
             call write_output
          enddo
       endif
@@ -107,6 +106,10 @@ contains
    end subroutine read_ecs_stdin
 
    subroutine write_output
+      ! Convert to km/s
+      vp = vp/1000.
+      vs1 = vs1/1000.
+      vs2 = vs2/1000.
       if (narg == 1) then
          write(*,'(f6.1,f9.4,3f10.4,2(f7.1))') pol,avs,vp,vs1,vs2,inc,azi
       else
