@@ -14,7 +14,6 @@ program CIJ_plot_cij2phasevels
 !     F: Fast shear wave orientation
 
    use anisotropy_ajn
-   use EmatrixUtils
    use spherical_geometry
 
    implicit none
@@ -64,7 +63,8 @@ program CIJ_plot_cij2phasevels
          !  Convert lon,lat to inc,azi in CI_phasevels frame
          inc = lat(i)
          azi = -lon(i)
-         call CIJ_phasevels(C,rho,azi,inc,vp=vp)
+         call CIJ_phase_vels(C,azi,inc,vp=vp)
+         vp = vp/1000.
          if (vp < minvp) minvp = vp
          if (vp > maxvp) maxvp = vp
          inc = 90. - lat(i)
@@ -87,7 +87,7 @@ program CIJ_plot_cij2phasevels
          if (lat(i) < 0.) exit
          inc = lat(i)
          azi = -lon(i)
-         call CIJ_phasevels(C,rho,azi,inc,avs=avs)
+         call CIJ_phase_vels(C,azi,inc,avs=avs)
          if (avs < minavs) minavs = avs
          if (avs > maxavs) maxavs = avs
          inc = 90. - lat(i)
@@ -107,7 +107,7 @@ program CIJ_plot_cij2phasevels
          if (lat(i) < 0.) exit
          inc = lat(i)
          azi = -lon(i)
-         call CIJ_phasevels(C,rho,azi,inc,pol=pol)
+         call CIJ_phase_vels(C,azi,inc,pol=pol)
          !  Orientation is given anticlockwise from x3 looking along ray.
          !  GMT wants them as azimuths from N, which is 1-axis.
          pol = 90. - pol - azi
@@ -127,7 +127,8 @@ program CIJ_plot_cij2phasevels
             do i=1,n
                inc = lat(i)
                azi = -lon(i)
-               call CIJ_phasevels(C,rho,azi,inc,vp=vp)
+               call CIJ_phase_vels(C,azi,inc,vp=vp)
+               vp = vp/1000.
                if (vp < minvp) minvp = vp
                if (vp > maxvp) maxvp = vp
                write(*,*) lon(i),lat(i),vp
@@ -145,7 +146,7 @@ program CIJ_plot_cij2phasevels
       do i=1,n
          inc = lat(i)
          azi = -lon(i)
-         call CIJ_phasevels(C,rho,azi,inc,avs=avs)
+         call CIJ_phase_vels(C,azi,inc,avs=avs)
          if (avs < minavs) minavs = avs
          if (avs > maxavs) maxavs = avs
          inc = 90. - lat(i)
@@ -162,7 +163,7 @@ program CIJ_plot_cij2phasevels
       do i=1,n
          inc = lat(i)
          azi = -lon(i)
-         call CIJ_phasevels(C,rho,azi,inc,pol=pol)
+         call CIJ_phase_vels(C,azi,inc,pol=pol)
          !  Orientation is given clockwise from x3 looking towards centre of sphere
          !  GMT wants them as azimuths from N, which is the same thing
          write(*,*) lon(i),lat(i),pol

@@ -3,8 +3,7 @@ FCOPTS = -O3
 BINDIR = ~/Applications/bin
 LIBDIR = ~/Applications/modules/lib
 MODDIR = ~/Applications/modules/mods
-LIBS = -lanisotropy_ajn -lspherical_geometry -lEmatrixUtils
-MODS = anisotropy_ajn.o spherical_geometry.o EmatrixUtils.o
+LIBS = -lanisotropy_ajn -lspherical_geometry
 
 all: CIJ_plot
 
