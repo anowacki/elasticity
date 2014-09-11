@@ -16,7 +16,7 @@ integer :: ioerr,nopt
 
 interface
    subroutine CIJ_scale_to_vs(C,r,eps,Vs,lon,lat,Cout)
-      use EmatrixUtils, only: CIJ_phasevels
+      use anisotropy_ajn, only: CIJ_phase_vels
       implicit none
       real(8),intent(in) :: C(6,6),r,eps,Vs
       real(8),intent(in),dimension(:) :: lon,lat  ! Arbitrary length automatic arrays
@@ -62,7 +62,7 @@ end program CIJ_scale_to_iso
 !===============================================================================
 subroutine CIJ_scale_to_vs(C,r,eps,Vs,lon,lat,Cout)
 !===============================================================================
-   use EmatrixUtils, only: CIJ_phasevels
+   use anisotropy_ajn, only: CIJ_phase_vels
    implicit none
    real(8),intent(in) :: C(6,6),r,eps,Vs
    real(8),intent(in),dimension(:) :: lon,lat  ! Arbitrary length automatic arrays
@@ -96,7 +96,7 @@ end subroutine CIJ_scale_to_vs
 !===============================================================================
 subroutine CIJ_isotropic_average(C,r,lon,lat,Ciso,Vp,Vs)
 !===============================================================================
-   use EmatrixUtils, only: CIJ_phasevels
+   use anisotropy_ajn, only: CIJ_phase_vels
 
    implicit none
    
@@ -118,7 +118,7 @@ subroutine CIJ_isotropic_average(C,r,lon,lat,Ciso,Vp,Vs)
    meanVp = 0.
    meanVs = 0.
    do i=1,n
-      call CIJ_phasevels(C,r,lat(i),lon(i),vp=Vp_temp,vs1=Vs1,vs2=Vs2)
+      call CIJ_phase_vels(C,lat(i),lon(i),vp=Vp_temp,vs1=Vs1,vs2=Vs2)
       meanVp = meanVp + 1._8/Vp_temp
       VsA = 2._8/(1._8/Vs1 + 1._8/Vs2)
       meanVs = meanVs + 1._8/VsA
@@ -127,8 +127,8 @@ subroutine CIJ_isotropic_average(C,r,lon,lat,Ciso,Vp,Vs)
    meanVp = meanVp/real(n)
    meanVs = meanVs/real(n)
    !  Isotropic properties
-   Vp_temp = 1._8/meanVp * 1000._8  ! CIJ_phasevels outputs in km/s, not m/s
-   Vs_temp = 1._8/meanVs * 1000._8
+   Vp_temp = 1._8/meanVp
+   Vs_temp = 1._8/meanVs
    if (present(Vp)) Vp = Vp_temp
    if (present(Vs)) Vs = Vs_temp
    
