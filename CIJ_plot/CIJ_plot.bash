@@ -17,8 +17,7 @@ usage () {
 	echo "	-c(pt) [colour palette] : Choose alternative colour palette."
 	echo "	                          Must be inbuilt to GMT. (wysiwyg)"
 	echo "	-h(elp)                 : Print this message."
-# Not implemented yet
-#	echo "	-l(ower)                : Plot lower hemsiphere (upper)"
+	echo "	-l(ower)                : Plot lower hemsiphere (upper)"
 	echo "	-n [no. contours]       : Number of contours (10)"
 	echo "	-norm(alise)            : Input ecs require density normalisation."
 	echo "	-o [outfile]            : Send output to output file. (temporary file)"
@@ -45,7 +44,6 @@ WIDTH=5
 vlength=0.3 # / cm
 
 # Defaults
-lower=0  # Upper hemisphere
 scale=0  # Automatic scale
 list=1   # Read from stdin
 PROJ=A   # Projections
@@ -63,10 +61,10 @@ while [ -n "$1" ]; do
 			cmap=$2
 			shift 2
 			;;
-# 		-l|-lower)  # Plot lower hemisphere, not upper
-# 			lower=1
-# 			shift
-# 			;;
+		-l|-lower)  # Plot lower hemisphere, not upper
+			lower=1
+			shift
+			;;
 		-s|-scale)
 			scale=1
 			vp1=$2
@@ -158,6 +156,11 @@ fi
 # If required, normalise by density
 if [ -n "$normalise" ]; then
 	ecs=`echo $ecs | awk -v r=$rho '{for (i=1;i<=NF;i++) printf("%s ",$i*r)}'`
+fi
+
+# Plot lower hemisphere if needed--just rotate about z by 180 deg
+if [ -n "$lower" ]; then
+	ecs=`echo $ecs | CIJ_rot3 0 0 180`
 fi
 
 ########################################
