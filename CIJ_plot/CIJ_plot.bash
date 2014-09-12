@@ -20,6 +20,7 @@ usage () {
 	echo "	-l(ower)                : Plot lower hemsiphere (upper)"
 	echo "	-n [no. contours]       : Number of contours (10)"
 	echo "	-norm(alise)            : Input ecs require density normalisation."
+	echo "  -nofast                 : Don't plot fast orientation vectors."
 	echo "	-o [outfile]            : Send output to output file. (temporary file)"
 	echo "	-p(roj) [projection]    : GMT code for projection (of A,E,G). (A)"
 	echo "	-s(cale) [vp1 vp2 avs1 avs2] : Set limits on colour scale.  (automatic)"
@@ -44,6 +45,7 @@ WIDTH=5
 vlength=0.3 # / cm
 
 # Defaults
+fast=1   # Plot fast orientation vectors
 scale=0  # Automatic scale
 list=1   # Read from stdin
 PROJ=A   # Projections
@@ -98,6 +100,10 @@ while [ -n "$1" ]; do
 		-n|-nlevels)
 			nlevels=$2
 			shift 2
+			;;
+		-nofast)
+			unset fast
+			shift
 			;;
 		-norm|-normalise)
 			normalise=1
@@ -220,7 +226,7 @@ echo "0 90 12 0 0 CM A@%2%V@%%@-S@- / %" |\
 
 
 # S fast orientation plot
-awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
+[ -n "$fast" ] && awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
 	psxy -J -R -SvB0.08c/0/0 -Gblack -W0.005c,white -N -O -K >> "$FIG"
 
 ######################################
