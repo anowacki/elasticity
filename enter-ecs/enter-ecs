@@ -139,4 +139,15 @@ else
 	calc-den
 fi
 
+# Extra comments, such as reference, stoichiometry, P, T.  Each line will be
+# preceded by a '# '.
+echo "Comments (multiple lines; stop with Ctrl-D on a new line):"
+while IFS= read -r line; do
+	echo "# $line"
+done >> "$TEMP"
+
+# Line describing who input the data where, when
+echo "#" >> "$TEMP"
+echo "# Input by $USER on $(hostname) on $(date)" >> "$TEMP"
+
 mv "$TEMP" "${file}" || rm -f "${TEMP}"
