@@ -2,50 +2,102 @@
 # Convert a list of .ecs files (with columns i j Cij, down to 7 7 rho) into a stream
 # of 36 Cijs (c11 c12 c13 c14 ... c16 c21 c22) [default]
 # or 21 Cijs (c11 ... c16 c22 ...)
-
-if [ $# -eq 0 ]; then
-	echo "Usage: ecs2ij (-necs [necs]) [.ecs file(s)]"
-	echo "   Output is to stdout (default 36 ecs)."
+usage () {
+	cat <<-END >&2
+	Usage: $(basename $0) (options) [.ecs file(s)]
+	Options:
+	   -necs [necs] : Fix number of ecs (21 or 36) [default 36]
+	   -n           : Do not normalise by density
+	   Output is to stdout (default 36 ecs).
+	END
 	exit 1
-fi
+}
 
+# Defaults
 necs=36
-if [ $1 = -necs ]; then
-	necs=$2
-	if [ $necs -ne 21 -a $necs -ne 36 ]; then
-		echo "necs must be 21 or 36"
-		exit 2
-	fi
-fi
+norm=1
 
-filelist=$(echo $@ | awk '$1!="-necs"{print}$1=="-necs"{$1=""; $2=""; print}')
+[ $# -eq 0 ] && usage
+while [ "$1" ]; do
+	case "$1" in
+		-n) unset norm; shift ;;
+		-necs) necs=$(printf "%d" "$2" 2>/dev/null) || usage
+		       [ $necs -ne 21 -a $necs -ne 36 ] && usage
+			   shift 2;;
+		*) break;;
+	esac
+done
 
-if [ $necs -eq 21 ]; then
-	for file in $filelist; do
-		awk '($1>=1 && $1<=6 && $1%1==0) && ($2>=1 && $2<=6 && $2%1==0) \
-				{i=$1; j=$2; c[i,j]=$3} \
-			$1==7 && $2==7 \
-				{den=$3}\
-			END \
-				{for(i=1; i<=6; i++){ \
-					for(j=i; j<=6; j++) \
-						{printf("%12.5e "),c[i,j]/den \
-					} \
-				}; printf("\n")}' $file
-	done
-else
-	for file in $filelist; do
-		awk '($1>=1 && $1<=6 && $1%1==0) && ($2>=1 && $2<=6 && $2%1==0) \
-				{i=$1; j=$2; c[i,j]=$3; c[j,i]=c[i,j]} \
-			$1==7 && $2==7 \
-				{den=$3}\
-			END \
-				{for(i=1; i<=6; i++){ \
-					for(j=1; j<=6; j++) \
-						{printf("%12.5e "),c[i,j]/den \
-					} \
-				}; printf("\n")}' $file
-	done
-fi
-
-exit 0
+# Loop over input files
+for f in $@; do
+	[ -r "$f" ] || { echo "Unrecognised option or can't read file '$file'" >&2; usage; }
+	awk -v norm="$norm" -v necs=$necs '
+	function check_read(nf, file, line, i, j, a) {
+		if (nf < 3 || a+0 != a) {
+			err = 1
+			if (i == 7) {
+				print "ecs2ij: Error reading density from file \""file"\"" \
+					> "/dev/stderr"
+			} else {
+				print "ecs2ij: Error reading constant C"i j" from file \""file"\"" \
+					> "/dev/stderr"
+			}
+			print "ecs2ij: Offending line was \""line"\"" > "/dev/stderr"
+			return 1
+		}
+		return 0
+	}
+	
+	function check_number(a, file, line) {
+		if (a+0 != a) print "ecs2ij: Error: "
+		return a+0 == a
+	}
+	
+	BEGIN{
+		# Output format for ecs.
+		fmt = "%12.5e "
+		n = 0 # Number of constants read in
+		err = 0
+	}
+	
+	$1 !~ /^[#%]/ { # Skipping lines where the first character is # or %
+		if ($1 == 7 && $2 == 7) {
+			err = check_read(NF, FILENAME, $0, $1, $2, $3)
+			if (err != 0) exit
+			rho = $3
+		} else if (($1>=1 && $1<=6 && $1%1==0) && ($2>=1 && $2<=6 && $2%1==0)) {
+			err = check_read(NF, FILENAME, $0, $1, $2, $3)
+			if (err != 0) exit
+			i = $1
+			j = $2
+			c[i,j] = $3
+			c[j,i] = $3
+			n++
+		}
+	}
+	
+	END {
+		if (! err && (n < 2 || rho == 0)) {
+			print "ecs2ij: Error: Could not read enough constants from file \""FILENAME"\"" \
+				> "/dev/stderr"
+			err = 1
+		}
+		if (err) exit(err)
+		# Do not normalise by density if norm /= ""
+		if (! norm) rho = 1
+		if (necs == 21) {
+			for (i=1; i<=6; i++) {
+				for (j=i; j<=6; j++) printf(fmt, c[i,j]/rho)
+			}
+			printf("\n")
+		} else {
+			for (i=1; i<=6; i++) {
+				for (j=1; j<=6; j++) printf(fmt, c[i,j]/rho)
+			}
+			printf("\n")
+		}
+	}
+	' "$f"
+	i=$?
+	[ $i -ne 0 ] && exit $i
+done
