@@ -48,11 +48,6 @@ for f in $@; do
 		return 0
 	}
 	
-	function check_number(a, file, line) {
-		if (a+0 != a) print "ecs2ij: Error: "
-		return a+0 == a
-	}
-	
 	BEGIN{
 		# Output format for ecs.
 		fmt = "%12.5e "
