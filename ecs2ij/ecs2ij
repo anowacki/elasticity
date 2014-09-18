@@ -29,7 +29,7 @@ while [ "$1" ]; do
 done
 
 # Loop over input files
-for f in $@; do
+for f in "$@"; do
 	[ -r "$f" ] || { echo "Unrecognised option or can't read file '$file'" >&2; usage; }
 	awk -v norm="$norm" -v necs=$necs '
 	function check_read(nf, file, line, i, j, a) {
