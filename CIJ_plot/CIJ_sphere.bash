@@ -189,7 +189,7 @@ GRD=`make_temp_file grd`
 trap "rm -f $P $S $F $CPT $GRD" EXIT
 
 # Start of postscript
-psxy -J${PROJ} -Rd -K -T -P 2>&1 > $FIG | grep -v "Warning"
+psxy -J${PROJ} -Rd -K -T -P 2>&1 > "$FIG" | grep -v "Warning"
 
 ########################################
 # P wave velocity plot
