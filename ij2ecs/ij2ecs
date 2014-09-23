@@ -2,17 +2,27 @@
 # Convert a string of 36 elastic constants into a .ecs file
 # Only works for one set of input constants
 
-if [ $# -ne 0 -a $# -ne 2 -a $# -ne 4 ]; then
-	echo "Usage: $0 (-necs [necs]) (-r [density])" > /dev/stderr
-	echo "   Input is 36 ecs + density in last column if no density supplied" > /dev/stderr
+usage () {
+	cat <<-END > /dev/stderr
+	Usage: $0 (options)
+	   Input is 36 ecs + density in last column if no density supplied
+	Options:
+	   -n            : Data are density-normalised (in m^2/s^2)
+	   -necs [21|36] : Set number of ecs on stdin [36]
+	   -r [density]  : Provide density [read from line]
+	END
 	exit 1
-fi
+}
 
 r=-1
 necs=36
 
 while [ -n "$1" ]; do
 	case "$1" in
+		-n)
+			norm=1
+			shift
+			;;
 		-necs)
 			necs=$2
 			if [ $necs -ne 21 -a $necs -ne 36 ]; then
@@ -26,36 +36,41 @@ while [ -n "$1" ]; do
 			shift 2
 			;;
 		*)
-			echo "$0: Unrecognised option $1" > /dev/stderr
-			exit 2
+			usage
 	esac
 done
 
 if [ $necs -eq 36 ]; then
-	awk -v r=$r 'NR==1 { 
+	awk -v r=$r -v n="$norm" '
+	NR==1 { 
+			if (NF == 37 && r == -1) rho = $37
+			if (NF == 36 && r != -1) rho = r
+			if (NF == 36 && r == -1) print "ij2ecs: must supply eith density with -r or in field " NF > "/dev/stderr"
+			if (NF == 37 && r != -1) print "ij2ecs: density found both with -r and in field " NF ".  Using last field in preference." > "/dev/stderr"
+			if (n) norm = rho; else norm = 1
 			for (i=1; i<=6; i++) {
 				for (j=i; j<=6; j++) {
-					print i,j,$(6*(i-1)+j)
+					print i, j, $(6*(i-1)+j)*norm
 				}
-			};
-			if (NF == 37 && r == -1) print "7 7",$37 ;
-			if (NF == 36 && r != -1) print "7 7",r ;
-			if (NF == 36 && r == -1) print "ij2ecs: must supply eith density with -r or in field " NF > "/dev/stderr";
-			if (NF == 37 && r != -1) print "ij2ecs: density found both with -r and in field " NF ".  Using last field in preference." > "/dev/stderr"
+			}
+			print "7 7", rho
 	}'
 else
-		awk -v r=$r 'NR==1 { 
+	awk -v r=$r -v n="$norm" '
+	NR==1 { 
+			if (NF == 22 && r == -1) rho = $22
+			if (NF == 21 && r != -1) rho = r
+			if (NF == 21 && r == -1) print "ij2ecs: must supply eith density with -r or in field " NF > "/dev/stderr"
+			if (NF == 22 && r != -1) print "ij2ecs: density found both with -r and in field " NF ".  Using last field in preference." > "/dev/stderr"
+			if (n) norm = rho; else norm = 1
 			n=1
 			for (i=1; i<=6; i++) {
 				for (j=i; j<=6; j++) {
-					print i,j,$n;
+					print i, j, $n*norm
 					n = n + 1
 				}
-			};
-			if (NF == 37 && r == -1) print "7 7",$37 ;
-			if (NF == 36 && r != -1) print "7 7",r ;
-			if (NF == 36 && r == -1) print "ij2ecs: must supply eith density with -r or in field " NF > "/dev/stderr";
-			if (NF == 37 && r != -1) print "ij2ecs: density found both with -r and in field " NF ".  Using last field in preference." > "/dev/stderr"
+			}
+			print "7 7", rho
 	}'
 fi
 
