@@ -1,0 +1,46 @@
+Elasticity
+==========
+
+Andy Nowacki
+andy.nowacki@bristol.ac.uk
+
+
+About
+-----
+https://github.com/anowacki/elasticity.git
+
+This repo contains command-line programs which are useful for dealing with sets
+of elastic constants.
+
+
+Installation
+------------
+A Fortran compiler is required.  The code relies heavily on my Fortran utility
+modules, which you can get from
+
+	https://github.com/anowacki/seismo-fortran.git
+
+I recommend you first check out this repo (by default, to a directory called
+~/Applications/modules), then build the libraries it contains.  Follow the
+instructions contained therein.
+
+When you are ready, set the path to the modules discuessed above in the
+Makefile, as well as the name of your Fortran compiler and the path to a
+directory where you'd like to install the programs.  Type `make' in the root
+directory to compile and install the progams.
+
+Plotting scripts rely on the Generic Mapping Tools (available at
+http://gmt.soest.hawaii.edu), and specifically version 4.
+
+
+Using the programs
+------------------
+At the moment, most of the programs are poorly documented.  Look at the source
+or run the program with no arguments (or with -h) to see how to run them.
+
+See the file PROGRAMS for a listing of what each installed program does.
+
+
+Licence
+-------
+See the file LICENCE for details
