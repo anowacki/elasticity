@@ -18,7 +18,7 @@ Installation
 A Fortran compiler is required.  The code relies heavily on my Fortran utility
 modules, which you can get from
 
-	https://github.com/anowacki/seismo-fortran.git
+    https://github.com/anowacki/seismo-fortran.git
 
 I recommend you first check out this repo (by default, to a directory called
 ~/Applications/modules), then build the libraries it contains.  Follow the
