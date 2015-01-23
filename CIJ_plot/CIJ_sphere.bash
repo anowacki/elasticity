@@ -88,6 +88,9 @@ while [ -n "$1" ]; do
 			dlabel[nd]="$4"
 			shift 4
 			;;
+		-h|-help|--help)
+			usage
+			;;
 		-s|-scale)
 			scale=1
 			vp1=$2
