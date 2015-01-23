@@ -1,109 +1,84 @@
 !===============================================================================
-program CIJ_Voigt
+program Voigt_average
 !===============================================================================
-! Accepts a number of lines of 21 or 36 elastic constants + density on stdin and
-! writes out the Voigt average.
+!  Compute the Voigt average of two or more elasticity tensors.
+!  Usage:
+!     CIJ_Voigt < [input] > [output]
+!     input is: VF(i)   c11(i)   c12(i) ... c16(i)   c21(i)   ... c26(i)   ... c66(i)
+!               VF(i+1) c11(i+1) c12(i) ... c16(i+1) c21(i+1) ... c26(i+1) ... c66(i+1)
+!  OR
+!     CIJ_Voigt [.ecs file 1] [VF 1]  [.ecs file 2] [VF 2] ... [.ecs file n] [VF n]
 
-   use anisotropy_ajn, only: CIJ_Voigt_av, CIJ_symm, CIJ_disp
-   use get_args
+use anisotropy_ajn, only: CIJ_Voigt_av, CIJ_load
 
-   implicit none
-   
-   integer, parameter :: rs = 8   ! DP
-   integer, parameter :: nmax = 10000    ! Maximum number of lines to average
-   integer :: nlines, iostatus, i, j
-   integer :: necs = 36  ! Default to 36 ecs + density
-   integer :: necs_out = 36
-   real(rs), dimension(nmax) :: VF, rh
-   real(rs), dimension(nmax,6,6) :: C
-   real(rs) :: Cave(6,6), rhave
-   logical :: supplied
-   
-   ! Check any command line arguments
-   if (command_argument_count() /= 2) call usage
-   
-   if (command_argument_count() /= 0) then
-      ! Specify number of ECs fed in
-      call get_arg("-n",necs,supplied=supplied)
-      if (supplied) then
-         if (necs /= 21 .and. necs /= 36) call usage
-         necs_out = necs
-      endif
-      
-      ! Specify number of ECs to write out (default to same)
-      call get_arg("-o",necs_out,supplied=supplied)
-      if (supplied) then
-         if (necs_out /= 21 .and. necs_out /= 36) call usage
-      endif
-   endif
-   
-   ! Loop over lines on stdin
-   nlines = 0
-   iostatus = 0
-   in_loop: do while (iostatus == 0)
-      nlines = nlines + 1
-      if (necs == 21) then
-         read(*,*,iostat=iostatus) ((C(nlines,i,j),j=i,6),i=1,6),rh(nlines)
-         call CIJ_symm(C(nlines,:,:))
-      else
-         read(*,*,iostat=iostatus) ((C(nlines,i,j),j=1,6),i=1,6),rh(nlines)
-      endif
-      
-      ! Read error
-      if (iostatus > 0) then
-         write(0,'(a,i0.0,a)') 'CIJ_Voigt: Problem reading ',necs,' + density from stdin'
-         stop
-      
-      ! End-of-line
-      else if (iostatus < 0) then
-         nlines = nlines - 1
-         exit in_loop
-      endif
-      
-      ! Check we haven't averaged too many constants
-      if (nlines >= nmax) then
-         write(0,'(a,i0.0,a)') 'CIJ_Voigt: number of input constants exceeds precompiled maximum (',nmax,')'
-         write(0,'(a)') 'Recompile with larger limits if this is a problem'
+implicit none
+
+integer,parameter :: nmax = 10000  ! Maximum number of constants to average
+integer :: n,i,ii,jj
+real(8) :: C(nmax,6,6),Ctemp(6,6)
+real(8) :: VF(nmax),VFtemp
+real(8) :: r(nmax),rtemp
+character(len=250) :: arg
+character(len=250)  :: file
+integer :: ioerr
+
+!  Check for correct invocation
+if (modulo(command_argument_count(),2) /= 0) then
+   call usage
+endif
+
+!  Loop through lines of stdin in, which each contain volume fraction, and then 
+!  36 elastic constants
+if (command_argument_count() == 0) then
+   ioerr = 0
+   i = 1
+   do while (ioerr == 0)
+      read(*,*,iostat=ioerr) VFtemp, ((Ctemp(ii,jj),jj=1,6),ii=1,6), rtemp
+      if (ioerr > 0) then
+         write(0,'(a)') 'CIJ_Voigt: Error: problem reading constants from stdin.'
          stop
       endif
+      if (ioerr < 0) exit
+      VF(i) = VFtemp
+      C(i,:,:) = Ctemp
+      r(i) = rtemp
+      n = i
+      i = i + 1
+   enddo
+   
+   call CIJ_Voigt_av(VF(1:n),C(1:n,:,:),r(1:n),Ctemp,rtemp)
+   
+   write(*,*) ((Ctemp(ii,jj),jj=1,6),ii=1,6),rtemp
+   
+!  Read the .ecs files from the command line and mix them in the proportions given
+!  by every second command line argument
+else
+   n = command_argument_count()/2
+   !  Loop over input files
+   do i=1,n
+      call get_command_argument(2*i-1,file)  ! Get .ecs file
+      call get_command_argument(2*i,  arg)
+      read(arg,*) VF(i)
+      call CIJ_load(file,Ctemp,rtemp)
+      C(i,:,:) = Ctemp/rtemp
+      r(i) = rtemp
+   enddo
+   
+   call CIJ_Voigt_av(VF(1:n),C(1:n,:,:),r(1:n),Ctemp,rtemp)
+   
+   write(*,*) ((Ctemp(ii,jj),jj=1,6),ii=1,6),rtemp
+endif
 
-   enddo in_loop
-      
-   ! Check we have at least two lines
-   if (nlines < 2) then
-      write(0,'(a)') 'CIJ_Voigt: more than one set of ECs must be provided on stdin.'
+contains
+   subroutine usage
+      write(0,'(a)') &
+         'Usage:', &
+         '   CIJ_Voigt < [input] > [output]', &
+         '   input is: VF(i)   c11(i)   c12(i) ... c16(i)   c21(i)   ... c26(i)   ... c66(i)   rho(i)', &
+         '             VF(i+1) c11(i+1) c12(i) ... c16(i+1) c21(i+1) ... c26(i+1) ... c66(i+1) rho(i+1)', &
+         'OR', &
+         '   CIJ_Voigt [.ecs file 1] [VF 1]  [.ecs file 2] [VF 2] ... [.ecs file n] [VF n]',&
+         '   Output: 36 ecs and density'
       stop
-   endif
-   
-   ! Calculate Voigt average
-   VF = 1.
-   call CIJ_Voigt_av(VF(1:nlines),C(1:nlines,:,:),rh(1:nlines),Cave,rhave)
-   
-   ! Write out answer with same number
-   if (necs_out == 21) then
-      write(*,*) ((Cave(i,j),j=i,6),i=1,6),rhave
-   else
-      write(*,*) ((Cave(i,j),j=1,6),i=1,6),rhave
-   endif
-   
-end program CIJ_Voigt
-!-------------------------------------------------------------------------------
-
-!===============================================================================
-subroutine usage()
-!===============================================================================
-! Writes out a usage statement
-
-   implicit none
-   
-   write(0,'(a)') &
-      'CIJ_Voigt: Compute the Voigt average of two or more elastic tensors and densities.',&
-      '           Each tensor is assumed to be summed with equal weight.',&
-      'Usage: CIJ_Voigt (options) < [(36) ecs + rho on stdin]',&
-      'Options:',&
-      '   -n [necs]   : Set number of ecs on stdin (21 or 36) [36]',&
-      '   -o [necs]   : Set number of ecs sent to stdout (21 or 36) [same as in]'
-   
-   stop
-end subroutine usage
-!-------------------------------------------------------------------------------
+   end subroutine usage
+end program Voigt_average

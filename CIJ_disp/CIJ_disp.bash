@@ -22,7 +22,9 @@ fi
 [ $# -ge 1 ] && { printf "%f" "$1" >/dev/null 2>&1 || usage; }
 
 awk -v r=$r '
-	NF == 36 {
+	# 36 ECs or 36 ECs with density
+	NF == 36  || NF == 37 {
+		if (NF == 37 && r == 1) r = $37
 		l = 1
 		for (i=1; i<=6; i++) {
 			for (j=1; j<=6; j++){
@@ -33,7 +35,9 @@ awk -v r=$r '
 		}
 	}
 	
-	NF == 21 {
+	# 21 ECs or 21 ECs with density
+	NF == 21 || NF == 22 {
+		if (NF == 22 && r == 1) r = $22
 		l = 1
 		for (i=1; i<=6; i++) {
 			for (j=i; j<=6; j++) {
@@ -45,8 +49,9 @@ awk -v r=$r '
 		}
 	}
 	
-	NF != 36 && NF != 21 {  # Incorrect input
-		print "CIJ_disp: Must supply a line of 36 or 21 elastic constants." > "/dev/stderr"
+	NF != 36 && NF != 37 && NF != 21 && NF != 22 {  # Incorrect input
+		print "CIJ_disp: Must supply a line of 36 or 21 elastic constants "\
+			"(optionally with density in last column)." > "/dev/stderr"
 		error = 1
 		exit 2
 	}
@@ -68,6 +73,7 @@ awk -v r=$r '
 				if (j == 6) printf("\n")
 			}
 		}
+		if (NF==22 || NF == 37) printf("Density: %6.2f kg/m^3\n", r)
 		
 		exit 0
 	}' /dev/stdin

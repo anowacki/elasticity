@@ -1,0 +1,139 @@
+PROGRAMS
+========
+
+This file lists the programs which are installed by running `make' in the root
+directory and what each of them does.
+
+In general, programs starting with CIJ_ operate on one or more sets of 36
+elastic constants, or a .ecs file containing the constants.
+
+Programs beginning with EC_grid operate on a special binary grid format,
+containing 3D volumes of elastic constants.
+
+
+Programs which operate on sets of elastic constants
+---------------------------------------------------
+
+Au
+        Compute the universal elastic anisotropy index for a set of constants
+CIJ_21to36
+        Convert between lists of 21 elastic constants to 36
+CIJ_36to21
+        Convert between lists of 36 elastic constants to 21
+CIJ_Hudson
+        Give elastic constants for ellipsoidal inclusions using the theory of
+        Hudson (1980)
+CIJ_Reuss
+        Compute the Reuss-bound average of sets of elastic constants
+CIJ_TandW
+        Give elastic constants for ellipsoidal inclusions in a matrix using the
+        theory of Tandon & Weng (1981)
+CIJ_VRH
+        Compute the Voigt-Reuss-Hill average of sets of elastic constants
+CIJ_Voigt
+        Compute the Voigt-bound average of sets of elastic constants
+CIJ_axial_average
+        Give the average of a set of constants when rotated many times about a
+        given axis
+CIJ_disp
+        Show a set of constants as a pretty matrix on stdout
+CIJ_global_VTI
+        Give the elastic constants for TI as defined by the parameters Vp, Vs,
+        xi, phi and eta, as used in global seismology
+CIJ_iso
+        Generate a set of constants for an isotropic medium
+CIJ_iso_av
+        Give the elastic constants for an isotropic average of a set of
+        constants supplied
+CIJ_normalise
+        Normalise a set of constants by some value (usually the density)
+CIJ_phasevels
+        Compute the phase velocities along a given direction through a set of
+        elastic constants
+CIJ_plot
+        Plot a phase velocity surface for a set of constants
+CIJ_sphere
+        Plot a phase velocity surface on a sphere for a set of constants,
+        viewing the sphere in an arbitrary direction
+CIJ_rot3
+        Rotate a set of constants about each of the cartesian axes in turn
+CIJ_rot_euler
+        Rotate a set of constants using three Euler angles
+CIJ_scale_to_iso
+        Convert a set of elastic constants into one with a target isotropic
+        average set of velocities
+CIJ_stable
+        Check whether a set of constants are physically stable
+CIJ_thom
+        Give the elastic constants for TI as defined by Thomson's (1986)
+        parameters Vp, Vs, delta, gamma, epsilon
+CIJ_thom_list
+        Give the elastic constants for TI as defined by Thomson's (1986)
+        parameters Vp, Vs, delta, gamma, epsilon for a set of parameters on stdin
+CIJ_thom_st
+        Give the elastic constants for 'weak' TI as defined by Thomson's (1986)
+        parameters Vp, Vs, delta*, gamma, epsilon
+Cij2cijkl
+        Convert between the Voigt-notation 6x6 matrix for elastic constants to
+        the 3x3x3x3 tensor
+EC_rot3
+        Rotate the constants in a .ecs file
+GPa2Pa
+        Convert a set of constants expressed in GPa to Pa
+Pa2GPa
+        Convert a set of constants expressed in Pa to GPa
+cijkl2Cij
+        Convert constants given as the 3x3x3x3 tensor to the Voigt-notation 6x6
+        matrix
+ecs2ij
+        Convert a .ecs file into a list of constants
+calc-den
+        Calculate the density of a (number of) unit cell(s), given the
+        stoichiometry
+enter-ecs
+        Script to help input elastic constants into a correctly-formatted .ecs
+        file
+ij2ecs
+        Convert a list of elastic constants into a .ecs file
+ijxyz2ij
+        Read a list of elastic constants prefixed with cartesian coordinates,
+        and remove the coordinates
+
+
+Programs which operate on EC_grid-format sets of constants in a 3D volume
+-------------------------------------------------------------------------
+
+Where the program has a '_bin' in the name, it is designed to work with binary-
+format EC_grid files.  Otherwise, ASCII files are used.
+
+EC_grid_21to36
+        Convert an ASCII EC_grid file from 21 constants per line to 36
+EC_grid2Au
+        Calculate the universal elastic anisotropy index for each set of
+        constants in an EC_grid file
+EC_grid_bin_dump
+        Dump the elastic constants contained in a binary EC_grid file to stdout
+EC_grid_asc2bin
+        Convert an ASCII EC_grid file to a binary one
+EC_grid_bin2asc
+        Convert a binary EC_grid file to an ASCII one
+EC_grid_edit_bin
+        Change the elastic constants of certain points within a binary EC_grid
+        file
+EC_grid_inquire
+        Get information about an ASCII EC_grid file
+EC_grid_inquire_bin
+        Get information about a binary EC_grid file
+EC_grid_interp_bin
+        Interpolate a binary EC_grid file onto a new grid
+EC_grid_new_bin
+        Create a new binary EC_grid file
+EC_grid_normalise_bin
+        Divide by some number (usually density) the elastic constants at all
+        points in a binary EC_grid file
+EC_grid_plot_bin
+        Create a plot of a binary EC_grid file
+EC_grid_rotate_bin
+        Rotate the elastic constants within a binary EC_grid file
+EC_rot3_xyz
+        Rotate all the elastic constants in an ASCII EC_grid file
