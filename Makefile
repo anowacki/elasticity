@@ -11,6 +11,7 @@ BINDIR = ~/Applications/bin
 DIRS = Au \
        CIJ_21to36 \
        CIJ_36to21 \
+       CIJ_BandS_axes \
        CIJ_Hudson \
        CIJ_Reuss \
        CIJ_TandW \
