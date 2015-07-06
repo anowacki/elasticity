@@ -111,25 +111,33 @@ contains
    end subroutine usage
 
    subroutine get_args
-      integer :: iarg, narg
+      integer :: iarg, narg, ichar
       narg = command_argument_count()
       if (narg < 1) call usage
       iarg = 1
       do while (iarg <= narg - 1)
          call get_command_argument(iarg, arg)
-         select case (arg)
-            case ('-a'); all = .true.
-            case ('-R'); rotate = .true.
-            case ('-S'); sum = .true.
-            case ('-X'); all = .false.; Xout = .true.
-            case ('-i'); all = .false.; iso = .true.
-            case ('-h'); all = .false.; hex = .true.
-            case ('-t'); all = .false.; tet = .true.
-            case ('-o'); all = .false.; ort = .true.
-            case ('-m'); all = .false.; mon = .true.
-            case ('-r'); all = .false.; tri = .true.
-            case ('-s'); all = .false.; symmetry = .true.
-            case ('--help'); call usage(help=.true.)
+         if (arg == '--help') call usage(help=.true.)
+         select case (arg(1:1))
+            case ('-')
+               ichar = 2
+               do while (ichar <= len_trim(arg))
+                  select case (arg(ichar:ichar))
+                     case ('a'); all = .true.
+                     case ('R'); rotate = .true.
+                     case ('S'); sum = .true.
+                     case ('X'); all = .false.; Xout = .true.
+                     case ('i'); all = .false.; iso = .true.
+                     case ('h'); all = .false.; hex = .true.
+                     case ('t'); all = .false.; tet = .true.
+                     case ('o'); all = .false.; ort = .true.
+                     case ('m'); all = .false.; mon = .true.
+                     case ('r'); all = .false.; tri = .true.
+                     case ('s'); all = .false.; symmetry = .true.
+                     case default; call usage
+                  end select
+                  ichar = ichar + 1
+               enddo
             case default; call usage
          end select
          iarg = iarg + 1
