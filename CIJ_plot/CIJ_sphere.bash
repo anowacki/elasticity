@@ -223,7 +223,7 @@ else
 	
 	echo "$ecs $rho" | CIJ_plot_cij2phasevels SS > $S
 	echo "$ecs $rho" | CIJ_plot_cij2phasevels FS > $F
-	min=`tail -n1 $S | awk '{printf("%0.2e", $2*0.95)}'`
+	min=0
 	max=`tail -n1 $S | awk '{printf("%0.2e", $3*1.05)}'`
 	if [ $scale -eq 1 ]; then
 		d=`echo $avs2 $avs1 $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'` #`echo "($max-$min)/10" | bc -l`
