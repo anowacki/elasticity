@@ -42,7 +42,8 @@ make_temp_file () {
 }
 
 WIDTH=5
-vlength=0.3 # / cm
+vlength=0.3 # / cm on plot
+vwidth=0.08 # / cm on plot
 
 # Defaults
 fast=1   # Plot fast orientation vectors
@@ -191,19 +192,23 @@ if [ $scale -eq 1 ]; then # Have defined scale
 	makecpt -C${cmap} -T$vp1/$vp2/$d $flip > $CPT
 else                     # Automatic scale
 	d=`echo $max $min $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'`
-	makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
+	gmt makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
 fi
-awk 'NF==3' $P | surface -G$GRD -Rd -I1
+awk 'NF==3' $P |
+	gmt surface -G$GRD -Rd -I1
 
-gmtset PAPER_MEDIA a4+
-grdimage $GRD -J${PROJ}0/0/${WIDTH}c -R-90/90/-90/90 -C$CPT -B90 -K -P > "$FIG" 2>/dev/null
-psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
+gmt gmtset PS_MEDIA a4
+gmt grdimage $GRD -J${PROJ}0/0/${WIDTH}c -R-90/90/-90/90 -C$CPT -B90 -K -P > "$FIG" 2>/dev/null
+gmt psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
 	-O -K >> "$FIG"
-echo "0 90 12 0 0 CM @%2%V@%%@-P@-@_ / km s@+-1" |\
-	pstext -J -R -N -O -K -D0/`echo 0.15*$WIDTH | bc -l`c >> "$FIG"
-echo "0 90 10 0 0 CM @%2%x@%%@-1" | pstext -J -R -O -K -N -D0/`echo 0.05*$WIDTH | bc -l`c >> "$FIG"
-echo "-90 0 10 0 0 CM @%2%x@%%@-2" | pstext -J -R -O -K -N -D-`echo 0.05*$WIDTH | bc -l`c/0 >> "$FIG"
-echo "0 0 10 0 0 BL $AVp %" | pstext -J -R -O -K -N -D-`echo 0.5*$WIDTH | bc -l`c >> "$FIG"
+echo "0 90 @%2%V@%%@-P@- / km s@+-1@+" |\
+	gmt pstext -F+f12+jCM -J -R -N -O -K -D0/`echo 0.15*$WIDTH | bc -l`c >> "$FIG"
+echo "0 90 @%2%x@%%@-1@-" |
+	gmt pstext -F+f10+jCM -J -R -O -K -N -D0/`echo 0.05*$WIDTH | bc -l`c >> "$FIG"
+echo "-90 0 @%2%x@%%@-2@-" |
+	gmt pstext -F+f10+jCM -J -R -O -K -N -D-`echo 0.05*$WIDTH | bc -l`c/0 >> "$FIG"
+echo "0 0 $AVp %" |
+	gmt pstext -F+f10+jBL -J -R -O -K -N -D-`echo 0.5*$WIDTH | bc -l`c >> "$FIG"
 
 #######################################
 # S wave velocity and fast shear wave plot
@@ -211,31 +216,32 @@ min=0 #`tail -n1 $S | awk '{printf("%0.2e", $2*0.95)}'`
 max=`tail -n1 $S | awk '{printf("%0.2e", $3*1.05)}'`
 if [ $scale -eq 1 ]; then
 	d=`echo $avs2 $avs1 $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'` #`echo "($max-$min)/10" | bc -l`
-	makecpt -C${cmap} -T$avs1/$avs2/$d $flip > $CPT
+	gmt makecpt -C${cmap} -T$avs1/$avs2/$d $flip > $CPT
 else
 	d=`echo $max $min $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'` #`echo "($max-$min)/10" | bc -l`
-	makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
+	gmt makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
 fi
-awk 'NF==3' $S | surface -G$GRD -Rd -I1
+awk 'NF==3' $S |
+	gmt surface -G$GRD -Rd -I1
 
-grdimage $GRD -X`echo ${WIDTH}*1.5 | bc -l`c -J -R -C$CPT -B90 -O -K >> "$FIG" 2>/dev/null
-psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
+gmt grdimage $GRD -X`echo ${WIDTH}*1.5 | bc -l`c -J -R -C$CPT -B90 -O -K >> "$FIG" 2>/dev/null
+gmt psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
 	-O -K >> "$FIG"
-echo "0 90 12 0 0 CM A@%2%V@%%@-S@- / %" |\
-	pstext -J -R -N -O -K -D0/`echo 0.15*$WIDTH | bc -l`c >> "$FIG"
+echo "0 90 A@%2%V@%%@-S@- / %" |\
+	gmt pstext -F+f12+jCM -J -R -N -O -K -D0/`echo 0.15*$WIDTH | bc -l`c >> "$FIG"
 
 
 # S fast orientation plot
-[ -n "$fast" ] && awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
-	psxy -J -R -SvB0.08c/0/0 -Gblack -W0.005c,white -N -O -K >> "$FIG"
+[ -n "$fast" ] && awk -v s=$vlength  -v w=$vwidth 'NF==3{print $0, s"c", w"c"}' $F |
+	gmt psxy -J -R -Sj -Gblack -W0.005c,white -N -O -K >> "$FIG"
 
 ######################################
 # Title
-[ -n "$title" ] && echo "0 90 13 0 0 CM $title" |
-	pstext -D`echo "-${WIDTH}*0.75" | bc -l`c/`echo "0.3*$WIDTH" | bc -l`c -J -R -O -K -N >> "$FIG"
+[ -n "$title" ] && echo "0 90 $title" |
+	gmt pstext -F+f13+jCM -D`echo "-${WIDTH}*0.75" | bc -l`c/`echo "0.3*$WIDTH" | bc -l`c -J -R -O -K -N >> "$FIG"
 
 # Finalise Postscript
-psxy -J -R -O -T >> "$FIG"
+gmt psxy -J -R -O -T >> "$FIG"
 
 [ -z "$batch" ] && gv "$FIG" 2>/dev/null
 
