@@ -43,7 +43,8 @@ make_temp_file () {
 }
 
 WIDTH=5
-vlength=0.3 # / cm
+vlength=8 # / degrees on sphere
+vwidth=1.5 # / degrees on sphere
 
 # Defaults
 lower=0  # Upper hemisphere
@@ -192,7 +193,7 @@ GRD=`make_temp_file grd`
 trap "rm -f $P $S $F $CPT $GRD" EXIT
 
 # Start of postscript
-psxy -J${PROJ} -Rd -K -T -P 2>&1 > "$FIG" | grep -v "Warning"
+gmt psxy -J${PROJ} -Rd -K -T -P 2>&1 > "$FIG" | grep -v "Warning"
 
 ########################################
 # P wave velocity plot
@@ -205,15 +206,15 @@ if [ $p ]; then
 	AVp=`tail -n1 $P | awk '{printf("%0.1f", 200*($3-$2)/($2+$3) )}'`
 	if [ $scale -eq 1 ]; then # Have defined scale
 		d=`echo $vp2 $vp1 $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'`
-		makecpt -C${cmap} -T$vp1/$vp2/$d $flip > $CPT
+		gmt makecpt -C${cmap} -T$vp1/$vp2/$d $flip > $CPT
 	else                     # Automatic scale
 		d=`echo $max $min $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'`
-		makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
+		gmt makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
 	fi
-	grep -v ">" $P | surface -G$GRD -Rd -I1
+	grep -v ">" $P | gmt surface -G$GRD -Rd -I1
 
-	grdimage $GRD -J${PROJ} -Rd -C$CPT -Bnsew -O -K >> "$FIG" 2>/dev/null
-	psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
+	gmt grdimage $GRD -J${PROJ} -Rd -C$CPT -Bnsew -O -K >> "$FIG" 2>/dev/null
+	gmt psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
 		-B/:"@%2%V@%%@-P@- / km s@+-1": -O -K >> "$FIG"
 	
 
@@ -227,25 +228,29 @@ else
 	max=`tail -n1 $S | awk '{printf("%0.2e", $3*1.05)}'`
 	if [ $scale -eq 1 ]; then
 		d=`echo $avs2 $avs1 $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'` #`echo "($max-$min)/10" | bc -l`
-		makecpt -C${cmap} -T$avs1/$avs2/$d $flip > $CPT
+		gmt makecpt -C${cmap} -T$avs1/$avs2/$d $flip > $CPT
 	else
 		d=`echo $max $min $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'` #`echo "($max-$min)/10" | bc -l`
-		makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
+		gmt makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
 	fi
 
-	grep -v ">" $S | surface -G$GRD -Rd -I1
+	grep -v ">" $S | gmt surface -G$GRD -Rd -I1
 
-	grdimage $GRD -J${PROJ} -Rd -C$CPT -Bnsew -O -K >> "$FIG" 2>/dev/null
-	psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
+	gmt grdimage $GRD -J${PROJ} -Rd -C$CPT -Bnsew -O -K >> "$FIG" 2>/dev/null
+	gmt psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
 		-B/:"A@%2%V@%%@-S@- / %": -O -K >> "$FIG"
 	# echo "0 0 12 0 0 CM A@%2%V@%%@-S@- / %" |\
 	# 	pstext -J -R -N -O -K -D0/`echo 0.15*$WIDTH | bc -l`c >> "$FIG"
 
 	# S fast orientation plot
-	awk -v s=$vlength 'NF==3{print $0,s "c"}' $F |\
-		psxy -J -R -SVB0.08c/0/0 -Gblack -W0.005c,white -O -K 2>&1 >> "$FIG" |
-		# Don't output warnings about not being able to plot the whole world
-		# when we're looking at the poles
+	# Fix error in GMT5+ where the bars across the whole globe are plotted
+	# even when they are on the invisible side
+	awk -v s=$vlength -v w=$vwidth 'NF==3{print $0, s"d", w"d"}' $F |
+		gmt mapproject -J -R -G${azi}/${inc}+ud |
+		awk '$NF <= 90' |
+		gmt psxy -J -R -SJ -Gblack -W0.005c,white -O -K 2>&1 >> "$FIG" |
+		# # Don't output warnings about not being able to plot the whole world
+		# # when we're looking at the poles
 		grep -v "Warning"
 	
 fi
@@ -267,25 +272,25 @@ if [ -z "$noaxes" ]; then
 			if (abs(azi) >  90) print "  0 180 10 0 0 CB -@%2%x@%%@-1"
 		}'`
 	echo "$dirs" |
-	psxy -J -R -O -K -Ss0.2c -Gwhite -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
+	gmt psxy -J -R -O -K -Ss0.2c -Gwhite -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
 	echo "$dirs" |
-	pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
+	gmt pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
 fi
 
 ####################################
 # Additional directional labels
 for ((i=1; i<=nd; i++)); do
 	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} |
-		psxy -J -R -O -K -Sc0.3c -Gyellow -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
+		gmt psxy -J -R -O -K -Sc0.3c -Gyellow -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
 	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} 11 0 0 CB "${dlabel[i]}" |
-		pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
+		gmt pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
 done
 
 # Finalise Postscript
-psxy -J -R -O -T 2>&1 >> "$FIG" | grep -v "Warning"
+gmt psxy -J -R -O -T 2>&1 >> "$FIG" | grep -v "Warning"
 
 [ -z "$batch" ] && gv "$FIG" 2>/dev/null
 
-[ -z $OUTPUT ] && /bin/rm -f "$FIG"
+[ -z "$OUTPUT" ] && /bin/rm -f "$FIG"
 
 exit 0
