@@ -30,7 +30,7 @@ directory where you'd like to install the programs.  Type `make' in the root
 directory to compile and install the progams.
 
 Plotting scripts rely on the Generic Mapping Tools (available at
-http://gmt.soest.hawaii.edu), and specifically version 4.
+http://gmt.soest.hawaii.edu), and specifically version 5 or higher.
 
 
 Using the programs
@@ -40,6 +40,15 @@ or run the program with no arguments (or with -h) to see how to run them.
 
 See the file PROGRAMS for a listing of what each installed program does.
 
+
+Version history
+---------------
+
+- 2.0.0
+  - Upgrade plotting scripts to use GMT5, making them incompatible with older
+    GMT versions.  Therefore this is a breaking change.
+- 1.0.0
+  - First tag of the software
 
 Licence
 -------
