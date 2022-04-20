@@ -32,6 +32,13 @@ usage () {
 	exit 1
 }
 
+# Get GMT major version for compatibility
+gmt_ver=$(gmt --version | awk -F. '{print $1}')
+printf "%d" "$gmt_ver" >/dev/null 2>&1 ||
+	{ echo "Cannot get GMT version" >&2; exit 1; }
+[ $gmt_ver -ge 5 ] ||
+	echo "Warning: GMT version $gmt_ver detected.  Only versions 5+ are supported" >&2
+
 # Wrapper function to make a temporary file with the desired suffix and exit the
 # script if we can't do so.
 make_temp_file () {
