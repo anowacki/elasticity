@@ -187,7 +187,7 @@ if [ -n "$normalise" ]; then
 	ecs=`echo $ecs | awk -v r=$rho '{for (i=1;i<=NF;i++) printf("%s ",$i*r)}'`
 fi
 
-# Get projection
+# Get projection; convert azi in our reference frame to GMT's
 azi=$(echo "-1*$azi" | bc -l)
 PROJ=${PROJ}${azi}/${inc}/${WIDTH}c
 
@@ -222,7 +222,7 @@ if [ $p ]; then
 
 	gmt grdimage $GRD -J${PROJ} -Rd -C$CPT -Bnsew -O -K >> "$FIG" 2>/dev/null
 	gmt psscale -C$CPT -D`echo $WIDTH*1.05 | bc -l`c/`echo $WIDTH/2 | bc -l`c/${WIDTH}c/0.3c \
-		-B/:"@%2%V@%%@-P@- / km s@+-1": -O -K >> "$FIG"
+		-B/:"@%2%V@%%@-P@- / km s@+-1@+": -O -K >> "$FIG"
 	
 
 #######################################
@@ -252,13 +252,12 @@ else
 	# S fast orientation plot
 	# Fix error in GMT5+ where the bars across the whole globe are plotted
 	# even when they are on the invisible side
-	awk -v s=$vlength -v w=$vwidth 'NF==3{print $0, s"d", w"d"}' $F |
-		gmt mapproject -J -R -G${azi}/${inc}+ud |
-		awk '$NF <= 90' |
-		gmt psxy -J -R -SJ -Gblack -W0.005c,white -O -K 2>&1 >> "$FIG" |
-		# # Don't output warnings about not being able to plot the whole world
-		# # when we're looking at the poles
-		grep -v "Warning"
+	gmt mapproject -G${azi}/${inc}+ud $F |
+		awk -v s=$vlength -v w=$vwidth '$NF <= 90 {print $1, $2, $3, s"d", w"d"}' |
+		gmt psxy -J -R -SJ -Gblack -W0.005c,white -O -K 2>&1 >> "$FIG"
+		# Don't output warnings about not being able to plot the whole world
+		# when we're looking at the poles
+		# grep -v "Warning"
 	
 fi
 
