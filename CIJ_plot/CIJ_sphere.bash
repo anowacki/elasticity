@@ -26,6 +26,8 @@ usage () {
 	echo "  -o [outfile]            : Send output to output file. (temporary file)"
 	echo "  -s(cale) [(vp1 vp2)|(avs1 avs2)] : Set limits on colour scale.  (automatic)"
 	# echo "  -t(itle) [title string] : Set title for plot, including GMT codes. (none)"
+	echo "  -v [azi inc phi]        : Plot a vector with fast orientation phi at"
+	echo "                            azimuth azi and inclincation inc."
 	echo "  Density can be determined from .ecs file or specified.  Must be determined"
 	echo "  for list input either on command line with -r, or as last value on stdin."
 	} > /dev/stderr
@@ -63,7 +65,8 @@ cmap=wysiwyg # Colour palette
 S=1      # S wave anisotropy sphere
 inc=30   # View incidence up from x1-x2 plane towards x3
 azi=45   # View azimuth from x1 towards x2
-nd=0     # No additional directions plotted
+nd=0     # No. additional directions plotted
+nv=0     # No. vector annotations to plot
 
 # Get options and density
 while [ -n "$1" ]; do
@@ -131,6 +134,13 @@ while [ -n "$1" ]; do
 		-norm|-normalise)
 			normalise=1
 			shift
+			;;
+		-v)
+			((nv++))
+			vazi[nv]="$2"
+			vinc[nv]="$3"
+			vfast[nv]="$4"
+			shift 4
 			;;
 		*)
 			list=0
@@ -290,6 +300,15 @@ for ((i=1; i<=nd; i++)); do
 		gmt psxy -J -R -O -K -Sc0.3c -Gyellow -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
 	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} 11 0 0 CB "${dlabel[i]}" |
 		gmt pstext -J -R -O -K -D0/0.25c -Gwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
+done
+
+####################################
+# Vector annotations
+for ((i=1; i<=nv; i++)); do
+	awk -v vazi=${vazi[i]} -v vinc=${vinc[i]} -v vfast=${vfast[i]} \
+		-v vlength=$vlength -v vwidth=$vwidth \
+		'BEGIN {print -vazi, vinc, vfast, 2*vlength "d", 2*vwidth "d"}' |
+		gmt psxy -J -R -O -K -SJ -Gred -W0.01c,white >> "$FIG"
 done
 
 # Finalise Postscript
