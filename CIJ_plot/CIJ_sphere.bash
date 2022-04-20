@@ -274,7 +274,7 @@ if [ -z "$noaxes" ]; then
 	echo "$dirs" |
 	gmt psxy -J -R -O -K -Ss0.2c -Gwhite -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
 	echo "$dirs" |
-	gmt pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
+	gmt pstext -J -R -O -K -D0/0.25c -Gwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
 fi
 
 ####################################
@@ -283,7 +283,7 @@ for ((i=1; i<=nd; i++)); do
 	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} |
 		gmt psxy -J -R -O -K -Sc0.3c -Gyellow -W0.5p -N 2>&1 >> "$FIG" | grep -v "Warning"
 	echo $(echo "-1*${dazi[i]}" | bc -l) ${dinc[i]} 11 0 0 CB "${dlabel[i]}" |
-		gmt pstext -J -R -O -K -D0/0.25c -Wwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
+		gmt pstext -J -R -O -K -D0/0.25c -Gwhite -N 2>&1 >> "$FIG" | grep -v "Warning"
 done
 
 # Finalise Postscript
