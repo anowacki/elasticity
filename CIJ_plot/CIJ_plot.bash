@@ -189,7 +189,7 @@ max=`tail -n1 $P | awk '{printf("%0.2e", $3*1.01)}'`
 AVp=`tail -n1 $P | awk '{printf("%0.1f", 200*($3-$2)/($2+$3) )}'`
 if [ $scale -eq 1 ]; then # Have defined scale
 	d=`echo $vp2 $vp1 $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'`
-	makecpt -C${cmap} -T$vp1/$vp2/$d $flip > $CPT
+	gmt makecpt -C${cmap} -T$vp1/$vp2/$d $flip > $CPT
 else                     # Automatic scale
 	d=`echo $max $min $nlevels | awk '{printf("%0.1e",($1-$2)/$3)}'`
 	gmt makecpt -C${cmap} -T$min/$max/$d $flip > $CPT
